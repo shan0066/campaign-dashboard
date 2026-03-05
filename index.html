@@ -29,38 +29,93 @@
     overflow-x: hidden;
   }
 
-  /* HEADER */
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  }
+  .loader-ring {
+    width: 56px; height: 56px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+  .loader-sub  { font-size: 0.6rem; color: var(--dim); }
+
+  /* ── ERROR BANNER ── */
+  #error-banner {
+    display: none;
+    background: rgba(255,92,108,0.1);
+    border: 1px solid rgba(255,92,108,0.3);
+    color: var(--red);
+    padding: 12px 40px;
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  /* ── LAST UPDATED ── */
+  #last-updated {
+    font-size: 0.6rem; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .refresh-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── HEADER ── */
   header {
     background: linear-gradient(135deg, #0c0f1a 0%, #131a2e 60%, #0f1625 100%);
     border-bottom: 1px solid var(--border);
-    padding: 28px 40px 22px;
+    padding: 24px 40px 20px;
     position: sticky; top: 0; z-index: 100;
     backdrop-filter: blur(20px);
   }
-  .header-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1600px; margin: auto; }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1600px; margin: auto; gap: 20px; flex-wrap: wrap; }
   .logo-area h1 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
   .logo-area h1 span { color: var(--accent); }
   .logo-area p { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
-  .header-stats { display: flex; gap: 32px; }
+  .header-right { display: flex; align-items: center; gap: 32px; }
+  .header-stats { display: flex; gap: 28px; }
   .hstat { text-align: right; }
-  .hstat-val { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
-  .hstat-lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .hstat-val { font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+  .hstat-lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
 
-  /* CONTROLS */
+  /* ── CONTROLS ── */
   .controls {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 16px 40px;
+    padding: 14px 40px;
   }
-  .controls-inner { max-width: 1600px; margin: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .ctrl-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); white-space: nowrap; }
+  .controls-inner { max-width: 1600px; margin: auto; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .ctrl-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); white-space: nowrap; }
+
   select, input[type=text] {
     background: var(--surface2);
     border: 1px solid var(--border);
     color: var(--text);
     font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    padding: 8px 14px;
+    font-size: 0.75rem;
+    padding: 7px 12px;
     border-radius: 6px;
     outline: none;
     cursor: pointer;
@@ -68,206 +123,235 @@
   }
   select:hover, input[type=text]:hover { border-color: var(--accent); }
   select:focus, input[type=text]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,142,247,0.15); }
+
+  /* Status toggle */
+  .status-toggle-group { display: flex; gap: 3px; }
+  .status-btn {
+    padding: 6px 12px; border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--muted);
+    font-family: 'DM Mono', monospace; font-size: 0.68rem;
+    cursor: pointer; transition: all 0.18s; white-space: nowrap;
+  }
+  .status-btn:hover { border-color: var(--accent); color: var(--text); }
+  .status-btn.active.all    { background: var(--accent);  border-color: var(--accent);  color: #fff; }
+  .status-btn.active.finish { background: var(--green);   border-color: var(--green);   color: #fff; }
+  .status-btn.active.run    { background: var(--accent);  border-color: var(--accent);  color: #fff; }
+  .status-btn.active.wip    { background: var(--amber);   border-color: var(--amber);   color: #fff; }
+
+  /* Site filter dropdown */
+  .site-filter-wrap { position: relative; }
+  .site-filter-btn {
+    padding: 7px 12px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem;
+    cursor: pointer; transition: border-color 0.2s; white-space: nowrap;
+    min-width: 115px; text-align: left;
+  }
+  .site-filter-btn:hover, .site-filter-btn.open { border-color: var(--accent); }
+  #site-filter-count {
+    background: var(--accent); color: #fff;
+    border-radius: 10px; padding: 1px 6px;
+    font-size: 0.58rem; margin-left: 4px; display: none;
+  }
+  #site-filter-count.visible { display: inline; }
+  .site-dropdown {
+    display: none; position: absolute;
+    top: calc(100% + 6px); left: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    z-index: 300; width: 340px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  .site-dropdown.open { display: block; }
+  .site-sel-all {
+    padding: 4px 9px; border-radius: 5px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.63rem; cursor: pointer;
+  }
+  .site-sel-all:hover { border-color: var(--accent); color: var(--text); }
+  .site-checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-height: 260px; overflow-y: auto; margin-top: 4px; }
+  .site-cb-item {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 6px; border-radius: 5px;
+    border: 1px solid var(--border); background: var(--surface2);
+    cursor: pointer; transition: all 0.15s;
+    font-size: 0.63rem; color: var(--muted);
+  }
+  .site-cb-item:hover { border-color: var(--accent); color: var(--text); }
+  .site-cb-item.checked { border-color: var(--accent); background: rgba(79,142,247,0.15); color: var(--accent); }
+  .site-cb-item input { display: none; }
+
+  /* Tabs */
   .tab-btns { display: flex; gap: 4px; margin-left: auto; }
   .tab-btn {
-    padding: 8px 18px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.05em;
+    padding: 7px 16px; border-radius: 6px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
   }
   .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
   .tab-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
 
-  /* MAIN */
-  main { max-width: 1600px; margin: auto; padding: 32px 40px; }
+  /* ── FILTER CHIPS ── */
+  #active-filters { display:none; background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 40px; }
+  #active-filters-inner { max-width:1600px; margin:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px;
+    background: rgba(79,142,247,0.15); border: 1px solid rgba(79,142,247,0.3);
+    color: var(--accent); font-size: 0.63rem; cursor: pointer; transition: all 0.15s;
+  }
+  .filter-chip:hover { background: rgba(255,92,108,0.15); border-color: rgba(255,92,108,0.3); color: var(--red); }
+  .clear-all-btn {
+    margin-left: auto; padding: 4px 10px; border-radius: 5px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-family: 'DM Mono',monospace; font-size: 0.6rem; cursor: pointer;
+  }
+  .clear-all-btn:hover { border-color: var(--red); color: var(--red); }
 
-  /* KPI CARDS */
-  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  /* ── MAIN ── */
+  main { max-width: 1600px; margin: auto; padding: 28px 40px; }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
   .kpi-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 22px 24px;
-    position: relative;
-    overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px;
+    position: relative; overflow: hidden;
     transition: transform 0.2s, border-color 0.2s;
   }
   .kpi-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-  .kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 100%;
-    border-radius: 12px 0 0 12px;
-  }
-  .kpi-card.blue::before { background: var(--accent); }
+  .kpi-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; border-radius:12px 0 0 12px; }
+  .kpi-card.blue::before   { background: var(--accent);  }
   .kpi-card.purple::before { background: var(--accent2); }
-  .kpi-card.green::before { background: var(--green); }
-  .kpi-card.amber::before { background: var(--amber); }
-  .kpi-icon { font-size: 1.4rem; margin-bottom: 10px; }
-  .kpi-val { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1; }
-  .kpi-card.blue .kpi-val { color: var(--accent); }
+  .kpi-card.green::before  { background: var(--green);   }
+  .kpi-card.amber::before  { background: var(--amber);   }
+  .kpi-icon { font-size: 1.3rem; margin-bottom: 8px; }
+  .kpi-val  { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; line-height: 1; }
+  .kpi-card.blue   .kpi-val { color: var(--accent);  }
   .kpi-card.purple .kpi-val { color: var(--accent2); }
-  .kpi-card.green .kpi-val { color: var(--green); }
-  .kpi-card.amber .kpi-val { color: var(--amber); }
-  .kpi-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 6px; }
+  .kpi-card.green  .kpi-val { color: var(--green);   }
+  .kpi-card.amber  .kpi-val { color: var(--amber);   }
+  .kpi-lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 5px; }
 
-  /* SECTION */
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    margin-bottom: 14px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* TWO-COL */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  /* Layout */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
   .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 22px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
   }
   .panel-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 18px;
+    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700;
+    color: var(--text); margin-bottom: 16px;
     display: flex; align-items: center; justify-content: space-between;
   }
   .panel-badge {
-    font-size: 0.62rem;
-    padding: 3px 8px;
-    border-radius: 20px;
-    background: rgba(79,142,247,0.15);
-    color: var(--accent);
-    font-weight: 400;
+    font-size: 0.6rem; padding: 3px 8px; border-radius: 20px;
+    background: rgba(79,142,247,0.12); color: var(--accent); font-weight: 400;
   }
+  .section-title {
+    font-family: 'Syne', sans-serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--muted); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
 
-  /* BAR CHART */
-  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
-  .bar-row { display: flex; align-items: center; gap: 10px; }
-  .bar-label { font-size: 0.7rem; color: var(--muted); width: 90px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 22px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    display: flex; align-items: center; padding-left: 8px;
-    font-size: 0.62rem; color: #fff; font-weight: 500;
+  /* Bar chart */
+  .bar-chart { display: flex; flex-direction: column; gap: 9px; }
+  .bar-row   { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 0.68rem; color: var(--muted); width: 88px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .bar-fill  {
+    height: 100%; border-radius: 4px;
+    display: flex; align-items: center; padding-left: 7px;
+    font-size: 0.6rem; color: #fff; font-weight: 500;
     transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
   }
-  .bar-val { font-size: 0.7rem; color: var(--text); width: 28px; flex-shrink: 0; text-align: right; }
+  .bar-val { font-size: 0.68rem; color: var(--text); width: 26px; flex-shrink: 0; text-align: right; }
 
-  /* SITE HEATMAP */
-  .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; }
+  /* Month trend */
+  .month-bars { display: flex; align-items: flex-end; gap: 5px; height: 80px; }
+  .month-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+  .month-bar {
+    width: 100%; background: linear-gradient(to top, var(--accent), var(--accent2));
+    border-radius: 3px 3px 0 0; min-height: 3px;
+    transition: opacity 0.2s; cursor: pointer;
+  }
+  .month-bar:hover { opacity: 0.75; }
+  .month-bar.selected { background: linear-gradient(to top, var(--green), #2ecc8a66); }
+  .month-bar-lbl { font-size: 0.52rem; color: var(--muted); }
+  .month-bar-val { font-size: 0.58rem; color: var(--accent); }
+
+  /* Donut */
+  .donut-wrap  { display: flex; align-items: center; gap: 20px; }
+  svg.donut    { flex-shrink: 0; }
+  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; }
+  .legend-dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Heatmap */
+  .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 5px; }
   .hmap-cell {
-    background: var(--surface2);
-    border-radius: 6px;
-    padding: 8px 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-    position: relative;
+    background: var(--surface2); border-radius: 6px;
+    padding: 8px 5px; text-align: center; cursor: pointer;
+    transition: all 0.2s; border: 1px solid transparent;
   }
   .hmap-cell:hover { border-color: var(--accent); transform: scale(1.05); }
-  .hmap-cell .site-name { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .hmap-cell .site-count { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+  .hmap-cell .site-name  { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .hmap-cell .site-count { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; }
 
-  /* STATUS PILLS */
-  .pill {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-  }
-  .pill-finish { background: rgba(46,204,138,0.15); color: var(--green); }
-  .pill-run { background: rgba(79,142,247,0.15); color: var(--accent); }
-  .pill-wip { background: rgba(245,166,35,0.15); color: var(--amber); }
+  /* Status pills */
+  .pill         { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.04em; }
+  .pill-finish  { background: rgba(46,204,138,0.15); color: var(--green); }
+  .pill-run     { background: rgba(79,142,247,0.15);  color: var(--accent); }
+  .pill-wip     { background: rgba(245,166,35,0.15);  color: var(--amber); }
 
-  /* TABLE */
+  /* Table */
   .table-wrap { overflow-x: auto; border-radius: 8px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
   th {
-    background: var(--surface2);
-    padding: 10px 14px;
-    text-align: left;
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    white-space: nowrap;
-    position: sticky; top: 0;
+    background: var(--surface2); padding: 9px 13px;
+    text-align: left; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+    white-space: nowrap; position: sticky; top: 0;
   }
-  td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  td { padding: 8px 13px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
   tr:hover td { background: rgba(79,142,247,0.04); }
   tr:last-child td { border-bottom: none; }
-  .site-tags { display: flex; flex-wrap: wrap; gap: 3px; max-width: 400px; }
-  .site-tag {
-    font-size: 0.55rem;
-    padding: 1px 5px;
-    border-radius: 3px;
-    background: rgba(79,142,247,0.12);
-    color: var(--accent);
-    border: 1px solid rgba(79,142,247,0.2);
+  .site-tags { display: flex; flex-wrap: wrap; gap: 3px; max-width: 380px; }
+  .site-tag  {
+    font-size: 0.53rem; padding: 1px 5px; border-radius: 3px;
+    background: rgba(79,142,247,0.1); color: var(--accent);
+    border: 1px solid rgba(79,142,247,0.18);
   }
 
-  /* DONUT */
-  .donut-wrap { display: flex; align-items: center; gap: 24px; }
-  svg.donut { flex-shrink: 0; }
-  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-  /* SPARKLINE / MONTH TREND */
-  .month-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
-  .month-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-  .month-bar {
-    width: 100%;
-    background: linear-gradient(to top, var(--accent), var(--accent2));
-    border-radius: 3px 3px 0 0;
-    min-height: 4px;
-    transition: opacity 0.2s;
-    cursor: pointer;
-  }
-  .month-bar:hover { opacity: 0.8; }
-  .month-bar.selected { background: linear-gradient(to top, var(--green), #2ecc8a88); }
-  .month-bar-lbl { font-size: 0.55rem; color: var(--muted); text-align: center; }
-  .month-bar-val { font-size: 0.6rem; color: var(--accent); }
-
-  /* VIEW TOGGLE */
+  /* Views */
   #site-view, #campaign-view { display: none; }
   #site-view.active, #campaign-view.active { display: block; }
-  #overview-view { display: block; }
   #overview-view.hidden { display: none; }
-
-  .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 0.8rem; }
+  .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 0.78rem; }
 
   @media (max-width: 900px) {
-    header { padding: 16px 20px; }
-    main { padding: 20px; }
-    .controls { padding: 12px 20px; }
+    header, .controls, #active-filters, main { padding-left: 16px; padding-right: 16px; }
     .kpi-grid { grid-template-columns: repeat(2,1fr); }
-    .two-col, .three-col { grid-template-columns: 1fr; }
+    .two-col  { grid-template-columns: 1fr; }
     .header-stats { display: none; }
   }
 </style>
 </head>
 <body>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Connecting to Google Sheets…</div>
+  <div class="loader-sub">Fetching live campaign data</div>
+</div>
+
+<!-- Error Banner -->
+<div id="error-banner"></div>
 
 <header>
   <div class="header-inner">
@@ -275,18 +359,25 @@
       <h1>Campaign<span>Track</span></h1>
       <p>Monthly Site Reporting · 2026</p>
     </div>
-    <div class="header-stats">
-      <div class="hstat">
-        <div class="hstat-val" id="hs-total">—</div>
-        <div class="hstat-lbl">Total Campaigns</div>
+    <div class="header-right">
+      <div class="header-stats">
+        <div class="hstat">
+          <div class="hstat-val" id="hs-total">—</div>
+          <div class="hstat-lbl">Total Campaigns</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hs-sites">—</div>
+          <div class="hstat-lbl">Active Sites</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hs-clients">—</div>
+          <div class="hstat-lbl">Clients</div>
+        </div>
       </div>
-      <div class="hstat">
-        <div class="hstat-val" id="hs-sites">48</div>
-        <div class="hstat-lbl">Active Sites</div>
-      </div>
-      <div class="hstat">
-        <div class="hstat-val" id="hs-clients">—</div>
-        <div class="hstat-lbl">Clients</div>
+      <div id="last-updated">
+        <span class="live-dot"></span>
+        <span id="last-updated-text">Loading…</span>
+        <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
       </div>
     </div>
   </div>
@@ -295,55 +386,57 @@
 <div class="controls">
   <div class="controls-inner">
     <span class="ctrl-label">Month</span>
-    <select id="month-filter">
-      <option value="">All Months</option>
-    </select>
+    <select id="month-filter"><option value="">All Months</option></select>
+
     <span class="ctrl-label">Status</span>
-    <select id="status-filter">
-      <option value="">All Status</option>
-      <option value="Finish">Finish</option>
-      <option value="Run">Run</option>
-      <option value="WIP">WIP</option>
-    </select>
+    <div class="status-toggle-group">
+      <button class="status-btn all active" data-status="">All</button>
+      <button class="status-btn finish"     data-status="Finish">✔ Finish</button>
+      <button class="status-btn run"        data-status="Run">▶ Run</button>
+      <button class="status-btn wip"        data-status="WIP">⏳ WIP</button>
+    </div>
+
+    <span class="ctrl-label">Site</span>
+    <div class="site-filter-wrap">
+      <button class="site-filter-btn" id="site-filter-btn">All Sites <span id="site-filter-count"></span> ▾</button>
+      <div class="site-dropdown" id="site-dropdown">
+        <input type="text" id="site-search" placeholder="Search sites…" style="width:100%;margin-bottom:8px">
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button class="site-sel-all" onclick="selectAllSites()">Select All</button>
+          <button class="site-sel-all" onclick="clearAllSites()">Clear</button>
+        </div>
+        <div class="site-checkbox-grid" id="site-checkbox-grid"></div>
+      </div>
+    </div>
+
     <span class="ctrl-label">Search</span>
-    <input type="text" id="search-input" placeholder="Client / Campaign..." style="width:180px">
+    <input type="text" id="search-input" placeholder="Client / Campaign…" style="width:155px">
+
     <div class="tab-btns">
       <button class="tab-btn active" data-view="overview">Overview</button>
-      <button class="tab-btn" data-view="site">By Site</button>
-      <button class="tab-btn" data-view="campaign">Campaigns</button>
+      <button class="tab-btn"        data-view="site">By Site</button>
+      <button class="tab-btn"        data-view="campaign">Campaigns</button>
     </div>
   </div>
 </div>
 
+<div id="active-filters">
+  <div id="active-filters-inner">
+    <span style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Active filters:</span>
+    <div id="filter-chips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear All</button>
+  </div>
+</div>
+
 <main>
-
-  <!-- OVERVIEW VIEW -->
+  <!-- OVERVIEW -->
   <div id="overview-view">
-    <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card blue">
-        <div class="kpi-icon">📋</div>
-        <div class="kpi-val" id="kpi-campaigns">—</div>
-        <div class="kpi-lbl">Campaign Entries</div>
-      </div>
-      <div class="kpi-card purple">
-        <div class="kpi-icon">🏢</div>
-        <div class="kpi-val" id="kpi-clients">—</div>
-        <div class="kpi-lbl">Unique Clients</div>
-      </div>
-      <div class="kpi-card green">
-        <div class="kpi-icon">📍</div>
-        <div class="kpi-val" id="kpi-bookings">—</div>
-        <div class="kpi-lbl">Total Site Bookings</div>
-      </div>
-      <div class="kpi-card amber">
-        <div class="kpi-icon">⏱️</div>
-        <div class="kpi-val" id="kpi-avg">—</div>
-        <div class="kpi-lbl">Avg Sites / Campaign</div>
-      </div>
+      <div class="kpi-card blue">  <div class="kpi-icon">📋</div><div class="kpi-val" id="kpi-campaigns">—</div><div class="kpi-lbl">Campaign Entries</div></div>
+      <div class="kpi-card purple"><div class="kpi-icon">🏢</div><div class="kpi-val" id="kpi-clients">—</div><div class="kpi-lbl">Unique Clients</div></div>
+      <div class="kpi-card green"> <div class="kpi-icon">📍</div><div class="kpi-val" id="kpi-bookings">—</div><div class="kpi-lbl">Total Site Bookings</div></div>
+      <div class="kpi-card amber"> <div class="kpi-icon">⏱️</div><div class="kpi-val" id="kpi-avg">—</div><div class="kpi-lbl">Avg Sites / Campaign</div></div>
     </div>
-
-    <!-- TREND + DONUT -->
     <div class="two-col">
       <div class="panel">
         <div class="panel-title">Monthly Campaign Volume <span class="panel-badge" id="trend-badge">click bar to filter</span></div>
@@ -352,31 +445,22 @@
       </div>
       <div class="panel">
         <div class="panel-title">Status Breakdown</div>
-        <div class="donut-wrap" id="donut-wrap">
+        <div class="donut-wrap">
           <svg class="donut" width="130" height="130" viewBox="0 0 130 130" id="donut-svg"></svg>
           <div class="donut-legend" id="donut-legend"></div>
         </div>
       </div>
     </div>
-
-    <!-- TOP CLIENTS + TOP SITES -->
     <div class="two-col">
-      <div class="panel">
-        <div class="panel-title">Top Clients by Site Bookings</div>
-        <div class="bar-chart" id="top-clients-chart"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-title">Most Booked Sites</div>
-        <div class="bar-chart" id="top-sites-chart"></div>
-      </div>
+      <div class="panel"><div class="panel-title">Top Clients by Site Bookings</div><div class="bar-chart" id="top-clients-chart"></div></div>
+      <div class="panel"><div class="panel-title">Most Booked Sites</div><div class="bar-chart" id="top-sites-chart"></div></div>
     </div>
   </div>
 
-  <!-- SITE VIEW -->
+  <!-- BY SITE -->
   <div id="site-view">
-    <div class="section-title">Site-wise booking heatmap</div>
-    <div class="panel" style="margin-bottom:20px">
-      <div class="panel-title">All Sites — Campaign Count <span class="panel-badge">hover to see details</span></div>
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-title">All Sites — Campaign Count <span class="panel-badge">click a site to drill down</span></div>
       <div class="heatmap-grid" id="heatmap-grid"></div>
     </div>
     <div class="panel">
@@ -385,60 +469,162 @@
     </div>
   </div>
 
-  <!-- CAMPAIGN VIEW -->
+  <!-- CAMPAIGNS -->
   <div id="campaign-view">
     <div class="panel">
       <div class="panel-title">All Campaign Entries <span class="panel-badge" id="campaign-count-badge">—</span></div>
       <div class="table-wrap">
-        <table id="campaign-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Client</th>
-              <th>Campaign</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Days</th>
-              <th>Status</th>
-              <th>INV</th>
-              <th>Sites</th>
-              <th>Count</th>
-            </tr>
-          </thead>
+        <table>
+          <thead><tr><th>#</th><th>Client</th><th>Campaign</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>INV</th><th>Sites</th><th>Count</th></tr></thead>
           <tbody id="campaign-tbody"></tbody>
         </table>
       </div>
     </div>
   </div>
-
 </main>
 
 <script>
-const RAW = [{"client":"Rozel","campaign":"Rozel CNY","start":"2026-01-02","end":"2026-02-01","days":"31","status":"Finish","inv":"2026/001","month":"January 2026","month_num":"2026-01","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","ASUOB A","ASUOB B","JRHP","JSP A","JSP B","MNAI A","MNAI B","MNCG A","MNCG B","MNS A","MNS B"],"site_count":43},{"client":"POS MALASYIA","campaign":"POS MALASYIA","start":"2026-01-07","end":"2026-02-06","days":"31","status":"Finish","inv":"2025/337","month":"January 2026","month_num":"2026-01","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","WD A","WD B","JRHP"],"site_count":22},{"client":"POS MALASYIA","campaign":"POS MALASYIA","start":"2026-01-13","end":"2026-02-12","days":"31","status":"Finish","inv":"2025/337","month":"January 2026","month_num":"2026-01","sites":["JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","ASUOB A","ASUOB B","JSP A","JSP B","MNAI A","MNAI B","MNCG A","MNCG B","MNS A","MNS B"],"site_count":20},{"client":"Astro Malaysia Holdings Bhd","campaign":"Astro Shaw (Akad yang Hilang)","start":"2026-01-15","end":"2026-01-21","days":"7","status":"Finish","inv":"2026/10","month":"January 2026","month_num":"2026-01","sites":["JSI A","JLY A","SUN","BU1U","MNAI A","FED A"],"site_count":6},{"client":"Astro Malaysia Holdings Bhd","campaign":"Astro Shaw (Akad yang Hilang)","start":"2026-01-29","end":"2026-02-04","days":"7","status":"Finish","inv":"2026/10","month":"January 2026","month_num":"2026-01","sites":["JTS","TM A","JC A","DU","IOI","PKNS A","FED B"],"site_count":7},{"client":"Watsons_Promo_2025","campaign":"Accenture Solutions Sdn Bhd","start":"2025-12-26","end":"2026-01-25","days":"31","status":"Finish","inv":"2025/344","month":"December 2025","month_num":"2025-12","sites":["SUN"],"site_count":1},{"client":"AirAsia-PENHKT Sustenance","campaign":"IPG Mediabrands Sdn Bhd","start":"2026-01-19","end":"2026-01-25","days":"7","status":"Finish","inv":"2026/10a","month":"January 2026","month_num":"2026-01","sites":["JRHP","MNAI A","MNCG A","MNS A"],"site_count":4},{"client":"Gaurdian","campaign":"Media Pertiwi","start":"2026-01-04","end":"2026-02-03","days":"31","status":"Finish","inv":"2026/003","month":"January 2026","month_num":"2026-01","sites":["JCE"],"site_count":1},{"client":"Gaurdian","campaign":"Media Pertiwi","start":"2026-02-04","end":"2026-03-03","days":"28","status":"Finish","inv":"2026/021","month":"February 2026","month_num":"2026-02","sites":["JCE"],"site_count":1},{"client":"Monash University","campaign":"Omedex Asia Sdn Bhd","start":"2026-01-03","end":"2026-01-17","days":"15","status":"Finish","inv":"2026/004","month":"January 2026","month_num":"2026-01","sites":["IOI"],"site_count":1},{"client":"Mastan Success Tuition","campaign":"Mastan Success Tuition Sdn Bhd","start":"2026-01-13","end":"2026-01-15","days":"3","status":"Finish","inv":"2026/009","month":"January 2026","month_num":"2026-01","sites":["MNAI A"],"site_count":1},{"client":"Safi Shayla Jan 2026","campaign":"Wipro Unza (M) Sdn. Bhd.","start":"2026-01-15","end":"2026-02-14","days":"31","status":"Finish","inv":"2025/338","month":"January 2026","month_num":"2026-01","sites":["JSI A","JSI B","JLY A","PS A","PS B","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B"],"site_count":18},{"client":"Safi Shayla Feb 2026","campaign":"Wipro Unza (M) Sdn. Bhd.","start":"2026-02-19","end":"2026-03-18","days":"28","status":"Run","inv":"2026/011","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI A","JKL B","JLY A","JC A","PBKJ","IOI","WD A","JRHP","MNAI A"],"site_count":10},{"client":"Watsons Promo January 2026","campaign":"Accenture Solutions Sdn Bhd","start":"2026-01-22","end":"2026-02-21","days":"31","status":"Finish","inv":"2026/014","month":"January 2026","month_num":"2026-01","sites":["SUN"],"site_count":1},{"client":"KFC - DV RM12 BOX","campaign":"IPG MEDIABRANDS SDN BHD","start":"2026-01-25","end":"2026-01-29","days":"5","status":"Finish","inv":"2026/015","month":"January 2026","month_num":"2026-01","sites":["JKL B","TM B","MNAI A"],"site_count":3},{"client":"KFC - DV RM12 BOX","campaign":"IPG MEDIABRANDS SDN BHD","start":"2026-02-01","end":"2026-02-02","days":"2","status":"Finish","inv":"2026/015","month":"February 2026","month_num":"2026-02","sites":["JKL B","TM B","MNAI A"],"site_count":3},{"client":"Caltex","campaign":"WPP Media","start":"2026-01-22","end":"2026-01-31","days":"10","status":"Finish","inv":"2026/025","month":"January 2026","month_num":"2026-01","sites":["SUN","BU1U","SS2","BHP","ASUOB A","ASUOB B","MNAI A","MNAI B"],"site_count":8},{"client":"APU 25-26","campaign":"Asia Pacific University","start":"2026-01-05","end":"2026-01-10","days":"6","status":"Finish","inv":"2025/273","month":"January 2026","month_num":"2026-01","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","JCE","BRK","BS","FED A","FED B"],"site_count":37},{"client":"APU 25-26","campaign":"Asia Pacific University","start":"2026-01-12","end":"2026-01-17","days":"6","status":"Finish","inv":"2025/273","month":"January 2026","month_num":"2026-01","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","JCE","BRK","BS","FED A","FED B"],"site_count":37},{"client":"APU 25-26","campaign":"Asia Pacific University","start":"2026-01-19","end":"2026-01-24","days":"6","status":"Finish","inv":"2025/273","month":"January 2026","month_num":"2026-01","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","JCE","BRK","BS","FED A","FED B"],"site_count":37},{"client":"APU 24-25","campaign":"Asia Pacific University","start":"2026-01-11","end":"2026-01-25","days":"15","status":"Finish","inv":"2025/273","month":"January 2026","month_num":"2026-01","sites":["ASUOB A","ASUOB B","JRHP","JSP A","JSP B","MNAI A","MNAI B","MNCG A","MNCG B","MNS A","MNS B"],"site_count":11},{"client":"Microsoft Event 2025","campaign":"Artz Inspire Sdn Bhd","start":"2026-01-29","end":"2026-02-28","days":"31","status":"Finish","inv":"2025/331","month":"January 2026","month_num":"2026-01","sites":["BU1U","JCE","BRK","BS","FED A","FED B"],"site_count":6},{"client":"Wen Ken DOOH","campaign":"Postercope Sdn Bhd","start":"2026-02-09","end":"2026-02-22","days":"14","status":"Finish","inv":"2025/293","month":"February 2026","month_num":"2026-02","sites":["JKL A","TM A","MNAI A"],"site_count":3},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-01-10","end":"2026-02-09","days":"31","status":"Finish","inv":"2026/019","month":"January 2026","month_num":"2026-01","sites":["JRHP"],"site_count":1},{"client":"UMobile","campaign":"IPG MEDIABRANDS SDN BHD","start":"2026-01-27","end":"2026-02-26","days":"31","status":"Finish","inv":"2026/016","month":"January 2026","month_num":"2026-01","sites":["DU"],"site_count":1},{"client":"M Summit","campaign":"Milenium Baru Sdn Bhd","start":"2025-11-29","end":"2026-01-13","days":"46","status":"Finish","inv":"2025/308","month":"November 2025","month_num":"2025-11","sites":["MNAI B"],"site_count":1},{"client":"M Summit","campaign":"Milenium Baru Sdn Bhd","start":"2026-01-14","end":"2026-02-28","days":"46","status":"Finish","inv":"2026/017","month":"January 2026","month_num":"2026-01","sites":["MNAI B"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-02-10","end":"2026-03-09","days":"28","status":"Run","inv":"2026/033","month":"February 2026","month_num":"2026-02","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-03-10","end":"2026-04-09","days":"31","status":"WIP","inv":"","month":"March 2026","month_num":"2026-03","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-04-10","end":"2026-05-09","days":"30","status":"WIP","inv":"","month":"April 2026","month_num":"2026-04","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-05-10","end":"2026-06-09","days":"31","status":"WIP","inv":"","month":"May 2026","month_num":"2026-05","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-06-10","end":"2026-07-09","days":"30","status":"WIP","inv":"","month":"June 2026","month_num":"2026-06","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-07-10","end":"2026-08-09","days":"31","status":"WIP","inv":"","month":"July 2026","month_num":"2026-07","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-08-10","end":"2026-09-09","days":"31","status":"WIP","inv":"","month":"August 2026","month_num":"2026-08","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-09-10","end":"2026-10-09","days":"30","status":"WIP","inv":"","month":"September 2026","month_num":"2026-09","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-10-10","end":"2026-11-09","days":"31","status":"WIP","inv":"","month":"October 2026","month_num":"2026-10","sites":["JRHP"],"site_count":1},{"client":"Mr. P Diapers","campaign":"Peninsular Media Sdn Bhd","start":"2026-11-10","end":"2026-12-09","days":"30","status":"WIP","inv":"","month":"November 2026","month_num":"2026-11","sites":["JRHP"],"site_count":1},{"client":"Marrybrown Eggstra-Ong","campaign":"Posterscope Sdn Bhd","start":"2026-02-16","end":"2026-02-22","days":"7","status":"Finish","inv":"2026/040","month":"February 2026","month_num":"2026-02","sites":["PS B","JML"],"site_count":2},{"client":"APU 25-26","campaign":"Asia Pacific University","start":"2026-02-02","end":"2026-02-07","days":"6","status":"Finish","inv":"2025/273","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","JCE","BRK","BS","FED A","FED B"],"site_count":37},{"client":"TQ Wuling","campaign":"Tan Chong Motor","start":"2026-02-04","end":"2026-03-03","days":"28","status":"Finish","inv":"2026/012","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI B","JKL A","TM B","JLY B","JC B","PS B","BB A","JML","1U","PBKJ","IOI","BHP","PKNS A","PKNS B","WD A"],"site_count":16},{"client":"Volvo","campaign":"LABFORTYTWO Sdn Bhd","start":"2026-02-05","end":"2026-02-28","days":"24","status":"Finish","inv":"2026/028","month":"February 2026","month_num":"2026-02","sites":["MNCG B"],"site_count":1},{"client":"Standard Chartered","campaign":"Posterscope Sdn Bhd","start":"2026-02-06","end":"2026-04-05","days":"59","status":"Run","inv":"2026/027","month":"February 2026","month_num":"2026-02","sites":["SW"],"site_count":1},{"client":"Mastan Success Tuition","campaign":"Mastan Success Tuituin Sdn Bhd","start":"2026-02-06","end":"2026-02-08","days":"3","status":"Finish","inv":"2026/030","month":"February 2026","month_num":"2026-02","sites":["MNAI A"],"site_count":1},{"client":"Udani Carpets","campaign":"Ashok Udani","start":"2026-02-08","end":"2026-03-24","days":"45","status":"Run","inv":"2026/024","month":"February 2026","month_num":"2026-02","sites":["BRK"],"site_count":1},{"client":"APU 25-26","campaign":"Asia Pacific University","start":"2026-02-23","end":"2026-02-28","days":"6","status":"Finish","inv":"2025/273","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","JCE","BRK","BS","FED A","FED B"],"site_count":37},{"client":"MooMoo x Mix FM","campaign":"Billsup Sdn Bhd","start":"2026-02-16","end":"2026-05-15","days":"89","status":"Run","inv":"2026/041","month":"February 2026","month_num":"2026-02","sites":["JRHP","MNAI A","MNAI B"],"site_count":3},{"client":"Baby Shop","campaign":"Lifestyle Retail Malaysia Sdn Bhd","start":"2026-02-19","end":"2026-03-18","days":"28","status":"Run","inv":"2026/053","month":"February 2026","month_num":"2026-02","sites":["FED A","FED B"],"site_count":2},{"client":"BIBA -  Store Opening 2026","campaign":"Platatoz Sdn Bhd","start":"2026-02-13","end":"2026-02-15","days":"3","status":"Finish","inv":"2026/039","month":"February 2026","month_num":"2026-02","sites":["JTS","BRK"],"site_count":2},{"client":"BIBA -  Store Opening 2026","campaign":"Platatoz Sdn Bhd","start":"2026-02-20","end":"2026-02-22","days":"3","status":"Finish","inv":"2026/039","month":"February 2026","month_num":"2026-02","sites":["JTS","BRK"],"site_count":2},{"client":"BIBA -  Store Opening 2026","campaign":"Platatoz Sdn Bhd","start":"2026-02-27","end":"2026-03-01","days":"3","status":"Finish","inv":"2026/039","month":"February 2026","month_num":"2026-02","sites":["JTS","BRK"],"site_count":2},{"client":"BIBA -  Store Opening 2026","campaign":"Platatoz Sdn Bhd","start":"2026-03-06","end":"2026-03-08","days":"3","status":"WIP","inv":"2026/039","month":"March 2026","month_num":"2026-03","sites":["JTS","BRK"],"site_count":2},{"client":"Max Fashion","campaign":"Lifestyle Retail Malaysia Sdn Bhd","start":"2026-02-20","end":"2026-03-05","days":"14","status":"Run","inv":"","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI A","JSI B","JC A","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","IOI","POS A","WD A"],"site_count":15},{"client":"Max Fashion","campaign":"Lifestyle Retail Malaysia Sdn Bhd","start":"2026-03-06","end":"2026-03-20","days":"15","status":"WIP","inv":"","month":"March 2026","month_num":"2026-03","sites":["JTS","JSI A","JSI B","JC A","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","IOI","POS A","WD A"],"site_count":15},{"client":"HT ECO Battery","campaign":"HT Eco Battery","start":"2026-02-21","end":"2026-04-20","days":"59","status":"Run","inv":"2025/347","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI A","JKL B","TM A","JLY B","JC A","PS A","BB B","JML","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","POS A","WD A"],"site_count":18},{"client":"Namme Kaiegh","campaign":"Orphic","start":"2026-02-22","end":"2026-02-23","days":"2","status":"Finish","inv":"2026/042","month":"February 2026","month_num":"2026-02","sites":["BS"],"site_count":1},{"client":"Kanni Boyz","campaign":"Kanni Boyz","start":"2026-02-24","end":"2026-02-25","days":"2","status":"Finish","inv":"2026/0036","month":"February 2026","month_num":"2026-02","sites":["BS"],"site_count":1},{"client":"Watsons Promo February 2026","campaign":"Accenture Solutions Sdn Bhd","start":"2026-02-22","end":"2026-03-21","days":"28","status":"Run","inv":"2026/043","month":"February 2026","month_num":"2026-02","sites":["SUN"],"site_count":1},{"client":"Internation OOH Week","campaign":"","start":"2026-02-26","end":"2026-03-04","days":"7","status":"Finish","inv":"NA","month":"February 2026","month_num":"2026-02","sites":["TM A","TM B","JLY A","JLY B","JC A","JC B","POS A","POS B","WD A","WD B","ASUOB A","ASUOB B","JRHP","JSP A","JSP B","MNAI A","MNAI B","MNCG A","MNCG B","MNS A","MNS B"],"site_count":21},{"client":"VOLVO March 2026","campaign":"Volvo Car Malaysia Sdn. Bhd.","start":"2026-03-01","end":"2026-03-08","days":"8","status":"Run","inv":"2026/049","month":"March 2026","month_num":"2026-03","sites":["MNAI B"],"site_count":1},{"client":"Astro Shaw (Amira Amir)","campaign":"Astro Malaysia Holdings Bhd","start":"2026-02-27","end":"2026-03-11","days":"13","status":"Run","inv":"","month":"February 2026","month_num":"2026-02","sites":["JSI A","JLY A","SUN","BU1U","MNAI A","FED A"],"site_count":6},{"client":"Astro Shaw (Amira Amir)","campaign":"Astro Malaysia Holdings Bhd","start":"2026-03-12","end":"2026-03-25","days":"14","status":"WIP","inv":"","month":"March 2026","month_num":"2026-03","sites":["JTS","TM A","JC A","DU","IOI","PKNS A","FED B"],"site_count":7},{"client":"Rozel Raya","campaign":"Rozel Corporation Sdn Bhd","start":"2026-02-27","end":"2026-03-13","days":"15","status":"Run","inv":"2026/047","month":"February 2026","month_num":"2026-02","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","JC A","JC B","PS A","PS B","BB A","BB B","JML","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","ASUOB A","ASUOB B","JRHP","JSP A","JSP B","MNAI A","MNAI B","MNCG A","MNCG B","MNS A","MNS B"],"site_count":43},{"client":"Danube","campaign":"Danube","start":"2026-03-01","end":"2026-03-31","days":"31","status":"Run","inv":"","month":"March 2026","month_num":"2026-03","sites":["JC A","JC B","PS A","PS B","BB A","BB B","JML","JSP A","JSP B","MNAI A","MNAI B","MNS A","MNS B"],"site_count":13},{"client":"BMW","campaign":"Accenture Solutions Sdn Bhd","start":"2026-03-03","end":"2026-03-05","days":"3","status":"Run","inv":"2026/053","month":"March 2026","month_num":"2026-03","sites":["1U"],"site_count":1},{"client":"BMW","campaign":"Accenture Solutions Sdn Bhd","start":"2026-03-06","end":"2026-03-06","days":"1","status":"WIP","inv":"","month":"March 2026","month_num":"2026-03","sites":["1U"],"site_count":1},{"client":"BMW","campaign":"Accenture Solutions Sdn Bhd","start":"2026-03-07","end":"2026-03-08","days":"2","status":"WIP","inv":"","month":"March 2026","month_num":"2026-03","sites":["1U"],"site_count":1},{"client":"KDK","campaign":"KDK Fans (M) Sdn Bhd","start":"2026-03-02","end":"2026-03-31","days":"30","status":"Run","inv":"2026/052","month":"March 2026","month_num":"2026-03","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","POS B","WD A","WD B","JCE","BRK","BS","FED A","FED B"],"site_count":28},{"client":"Danube","campaign":"Danube","start":"2026-03-01","end":"2026-03-31","days":"31","status":"Run","inv":"","month":"March 2026","month_num":"2026-03","sites":["JTS","JSI A","JSI B","JKL A","JKL B","TM A","TM B","JLY A","JLY B","SUN","1U","DU","BU1U","SS2","PBKJ","PJS","SW","IOI","BHP","PKNS A","PKNS B","POS A","POS B","WD A","WD B","ASUOB A","ASUOB B"],"site_count":27}];
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
+const SHEET_URL = 'https://script.google.com/a/macros/skybluegroup.com/s/AKfycbxwmQ28eGEVrwoUekv5xhXmOK3LGV2L3unYl6hyBUWdZW5qwMAfkfTdU3eTjl-8n7Ki/exec';
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // auto-refresh every 5 minutes
 
-const ALL_SITES = ['JTS','JSI A','JSI B','JKL A','JKL B','TM A','TM B','JLY A','JLY B','JC A','JC B','PS A','PS B','BB A','BB B','JML','SUN','1U','DU','BU1U','SS2','PBKJ','PJS','SW','IOI','BHP','PKNS A','PKNS B','POS A','POS B','WD A','WD B','ASUOB A','ASUOB B','JRHP','JSP A','JSP B','MNAI A','MNAI B','MNCG A','MNCG B','MNS A','MNS B','JCE','BRK','BS','FED A','FED B'];
+const SITE_COLUMNS = ['JTS','JSI A','JSI B','JKL A','JKL B','TM A','TM B','JLY A','JLY B','JC A','JC B','PS A','PS B','BB A','BB B','JML','SUN','1U','DU','BU1U','SS2','PBKJ','PJS','SW','IOI','BHP','PKNS A','PKNS B','POS A','POS B','WD A','WD B','ASUOB A','ASUOB B','JRHP','JSP A','JSP B','MNAI A','MNAI B','MNCG A','MNCG B','MNS A','MNS B','JCE','BRK','BS','FED A','FED B'];
 
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let RAW = [];
+let ALL_SITES = [...SITE_COLUMNS];
+let months = [];
 let selectedMonth = '';
 let selectedStatus = '';
 let searchQuery = '';
 let activeView = 'overview';
 let selectedTrendMonth = '';
+let selectedSites = new Set();
 
-// Populate month filter
-const months = [...new Set(RAW.map(r => r.month_num))].sort();
-const mSel = document.getElementById('month-filter');
-months.forEach(m => {
-  const d = RAW.find(r => r.month_num === m);
-  const opt = document.createElement('option');
-  opt.value = m; opt.textContent = d.month;
-  mSel.appendChild(opt);
-});
+// ─────────────────────────────────────────────
+//  DATA FETCH & PARSE
+// ─────────────────────────────────────────────
+function parseDate(d) {
+  if (!d) return null;
+  const s = String(d).trim();
+  // Try DD/MM/YYYY
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  // Try YYYY-MM-DD
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  // Try JS Date parsing as fallback
+  const dt = new Date(s);
+  return isNaN(dt) ? null : dt;
+}
 
+function parseSheetData(rows) {
+  const MONTHS_LABEL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return rows.map(row => {
+    const sd = parseDate(row['Start Date']);
+    const ed = parseDate(row['End Date']);
+    if (!sd || !row['Client Name'] || !String(row['Client Name']).trim()) return null;
+
+    const activeSites = SITE_COLUMNS.filter(s => {
+      const v = String(row[s] || '').trim().toUpperCase();
+      return v === 'TRUE' || v === '1' || v === 'YES';
+    });
+
+    const mn = `${sd.getFullYear()}-${String(sd.getMonth()+1).padStart(2,'0')}`;
+    return {
+      client:     String(row['Client Name']).trim(),
+      campaign:   String(row['Campaign Name'] || '').trim(),
+      start:      `${String(sd.getDate()).padStart(2,'0')}/${String(sd.getMonth()+1).padStart(2,'0')}/${sd.getFullYear()}`,
+      end:        ed ? `${String(ed.getDate()).padStart(2,'0')}/${String(ed.getMonth()+1).padStart(2,'0')}/${ed.getFullYear()}` : '—',
+      days:       String(row['Days'] || '').trim(),
+      status:     String(row['Status'] || '').trim(),
+      inv:        String(row['INV'] || '').trim(),
+      month:      `${MONTHS_LABEL[sd.getMonth()]} ${sd.getFullYear()}`,
+      month_num:  mn,
+      sites:      activeSites,
+      site_count: activeSites.length,
+    };
+  }).filter(Boolean);
+}
+
+async function loadData() {
+  showLoading(true);
+  hideError();
+  try {
+    // Use no-cors proxy workaround via jsonp-style or direct fetch
+    const res = await fetch(SHEET_URL, { mode: 'cors' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    RAW = parseSheetData(json);
+
+    // Rebuild month list from fresh data
+    months = [...new Set(RAW.map(r => r.month_num))].sort();
+
+    // Rebuild month filter dropdown
+    const mSel = document.getElementById('month-filter');
+    const prevMonth = mSel.value;
+    mSel.innerHTML = '<option value="">All Months</option>';
+    months.forEach(m => {
+      const d = RAW.find(r => r.month_num === m);
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = d.month;
+      if (m === prevMonth) opt.selected = true;
+      mSel.appendChild(opt);
+    });
+
+    // Rebuild ALL_SITES from data (use all known site columns)
+    ALL_SITES = SITE_COLUMNS.filter(s => RAW.some(r => r.sites.includes(s)));
+
+    // Update header stats
+    document.getElementById('hs-total').textContent   = RAW.length;
+    document.getElementById('hs-sites').textContent   = ALL_SITES.length;
+    document.getElementById('hs-clients').textContent = new Set(RAW.map(r => r.client)).size;
+
+    // Last updated
+    const now = new Date();
+    document.getElementById('last-updated-text').textContent =
+      `Live · ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+
+    render();
+    showLoading(false);
+  } catch (err) {
+    showLoading(false);
+    showError(err);
+  }
+}
+
+function showLoading(on) {
+  document.getElementById('loading-overlay').style.display = on ? 'flex' : 'none';
+}
+
+function showError(err) {
+  const el = document.getElementById('error-banner');
+  el.style.display = 'block';
+  el.innerHTML = `
+    ⚠️ Could not load data from Google Sheets. 
+    <strong>${err.message}</strong> — 
+    Make sure the Apps Script is deployed as "Anyone" access. 
+    <button onclick="loadData()" style="margin-left:12px;padding:3px 10px;border-radius:4px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-family:inherit;font-size:0.7rem;">Retry</button>
+  `;
+}
+
+function hideError() {
+  document.getElementById('error-banner').style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+//  FILTERING
+// ─────────────────────────────────────────────
 function getFiltered() {
   const month = selectedTrendMonth || selectedMonth;
   return RAW.filter(r => {
     if (month && r.month_num !== month) return false;
     if (selectedStatus && r.status !== selectedStatus) return false;
+    if (selectedSites.size > 0 && !r.sites.some(s => selectedSites.has(s))) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       if (!r.client.toLowerCase().includes(q) && !r.campaign.toLowerCase().includes(q)) return false;
@@ -447,60 +633,126 @@ function getFiltered() {
   });
 }
 
+// ─────────────────────────────────────────────
+//  SITE FILTER DROPDOWN
+// ─────────────────────────────────────────────
+function buildSiteCheckboxes(query = '') {
+  const grid = document.getElementById('site-checkbox-grid');
+  grid.innerHTML = '';
+  ALL_SITES.filter(s => s.toLowerCase().includes(query.toLowerCase())).forEach(site => {
+    const item = document.createElement('label');
+    item.className = 'site-cb-item' + (selectedSites.has(site) ? ' checked' : '');
+    item.innerHTML = `<input type="checkbox" ${selectedSites.has(site) ? 'checked' : ''}><span>${site}</span>`;
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      selectedSites.has(site) ? selectedSites.delete(site) : selectedSites.add(site);
+      item.classList.toggle('checked', selectedSites.has(site));
+      updateSiteFilterBtn();
+      render();
+    });
+    grid.appendChild(item);
+  });
+}
+
+function updateSiteFilterBtn() {
+  const btn = document.getElementById('site-filter-btn');
+  const countEl = document.getElementById('site-filter-count');
+  btn.childNodes[0].textContent = selectedSites.size ? 'Sites ' : 'All Sites ';
+  countEl.textContent = selectedSites.size;
+  countEl.classList.toggle('visible', selectedSites.size > 0);
+}
+
+function selectAllSites() {
+  ALL_SITES.forEach(s => selectedSites.add(s));
+  buildSiteCheckboxes(document.getElementById('site-search').value);
+  updateSiteFilterBtn(); render();
+}
+function clearAllSites() {
+  selectedSites.clear();
+  buildSiteCheckboxes(document.getElementById('site-search').value);
+  updateSiteFilterBtn(); render();
+}
+
+// ─────────────────────────────────────────────
+//  FILTER CHIPS
+// ─────────────────────────────────────────────
+function renderFilterChips() {
+  const chips = [];
+  if (selectedMonth) chips.push({ label: RAW.find(r => r.month_num === selectedMonth)?.month, clear: () => { selectedMonth = ''; document.getElementById('month-filter').value = ''; selectedTrendMonth = ''; } });
+  if (selectedTrendMonth) chips.push({ label: RAW.find(r => r.month_num === selectedTrendMonth)?.month + ' (trend)', clear: () => { selectedTrendMonth = ''; } });
+  if (selectedStatus) chips.push({ label: selectedStatus, clear: () => { selectedStatus = ''; document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active')); document.querySelector('.status-btn.all').classList.add('active'); } });
+  [...selectedSites].forEach(s => chips.push({ label: s, clear: () => { selectedSites.delete(s); updateSiteFilterBtn(); buildSiteCheckboxes(); } }));
+  if (searchQuery) chips.push({ label: `"${searchQuery}"`, clear: () => { searchQuery = ''; document.getElementById('search-input').value = ''; } });
+
+  const bar     = document.getElementById('active-filters');
+  const chipsEl = document.getElementById('filter-chips');
+  bar.style.display = chips.length ? 'block' : 'none';
+  chipsEl.innerHTML = chips.map((c, i) => `<span class="filter-chip" data-i="${i}">${c.label} ✕</span>`).join('');
+  chipsEl.querySelectorAll('.filter-chip').forEach((el, i) => el.addEventListener('click', () => { chips[i].clear(); render(); }));
+}
+
+function clearAllFilters() {
+  selectedMonth = ''; selectedStatus = ''; searchQuery = ''; selectedTrendMonth = ''; selectedSites.clear();
+  document.getElementById('month-filter').value = '';
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.status-btn.all').classList.add('active');
+  updateSiteFilterBtn(); buildSiteCheckboxes(); render();
+}
+
+// ─────────────────────────────────────────────
+//  RENDER HELPERS
+// ─────────────────────────────────────────────
 function statusPill(s) {
   const cls = s === 'Finish' ? 'pill-finish' : s === 'Run' ? 'pill-run' : 'pill-wip';
-  return `<span class="pill ${cls}">${s}</span>`;
+  return `<span class="pill ${cls}">${s || '—'}</span>`;
 }
 
-function heatColor(val, max) {
-  if (val === 0) return '#1a1f38';
-  const pct = val / max;
-  if (pct < 0.3) return '#1a2a4a';
-  if (pct < 0.5) return '#1d3a6e';
-  if (pct < 0.7) return '#2a5aa8';
-  if (pct < 0.9) return '#3b75d4';
+function heatColor(v, max) {
+  if (!v) return '#1a1f38';
+  const p = v / max;
+  if (p < 0.2) return '#1a2a4a';
+  if (p < 0.4) return '#1d3a6e';
+  if (p < 0.6) return '#2a5aa8';
+  if (p < 0.8) return '#3b75d4';
   return '#4f8ef7';
 }
+function heatText(v, max) { return v / max > 0.4 ? '#e8ecff' : '#6b7299'; }
 
-function textColor(val, max) {
-  return val / max > 0.4 ? '#e8ecff' : '#6b7299';
-}
-
+// ─────────────────────────────────────────────
+//  RENDER FUNCTIONS
+// ─────────────────────────────────────────────
 function renderKPIs(data) {
-  const clients = new Set(data.map(r => r.client)).size;
+  const clients    = new Set(data.map(r => r.client)).size;
   const totalSites = data.reduce((a, r) => a + r.site_count, 0);
-  const avg = data.length ? (totalSites / data.length).toFixed(1) : 0;
+  const avg        = data.length ? (totalSites / data.length).toFixed(1) : 0;
   document.getElementById('kpi-campaigns').textContent = data.length;
-  document.getElementById('kpi-clients').textContent = clients;
-  document.getElementById('kpi-bookings').textContent = totalSites;
-  document.getElementById('kpi-avg').textContent = avg;
-  document.getElementById('hs-total').textContent = RAW.length;
-  document.getElementById('hs-clients').textContent = new Set(RAW.map(r => r.client)).size;
+  document.getElementById('kpi-clients').textContent   = clients;
+  document.getElementById('kpi-bookings').textContent  = totalSites;
+  document.getElementById('kpi-avg').textContent       = avg;
 }
 
 function renderTrend() {
   const el = document.getElementById('month-trend');
-  const monthCounts = {};
-  months.forEach(m => monthCounts[m] = 0);
-  RAW.forEach(r => { if (monthCounts[r.month_num] !== undefined) monthCounts[r.month_num]++; });
-  const max = Math.max(...Object.values(monthCounts));
+  const counts = {};
+  months.forEach(m => counts[m] = 0);
+  RAW.forEach(r => { if (counts[r.month_num] !== undefined) counts[r.month_num]++; });
+  const max = Math.max(...Object.values(counts), 1);
   el.innerHTML = '';
   months.forEach(m => {
-    const count = monthCounts[m];
-    const pct = max ? (count / max) * 100 : 0;
-    const d = RAW.find(r => r.month_num === m);
-    const lbl = d.month.split(' ')[0].slice(0, 3);
-    const isSelected = m === selectedTrendMonth;
-    const wrap = document.createElement('div');
+    const count = counts[m];
+    const pct   = (count / max) * 100;
+    const label = (RAW.find(r => r.month_num === m)?.month || m).split(' ')[0].slice(0, 3);
+    const wrap  = document.createElement('div');
     wrap.className = 'month-bar-wrap';
     wrap.innerHTML = `
       <div class="month-bar-val">${count}</div>
-      <div class="month-bar ${isSelected ? 'selected' : ''}" style="height:${Math.max(pct * 0.7, 4)}px" title="${d.month}: ${count} campaigns"></div>
-      <div class="month-bar-lbl">${lbl}</div>
-    `;
+      <div class="month-bar ${m === selectedTrendMonth ? 'selected' : ''}" style="height:${Math.max(pct * 0.72, 3)}px"></div>
+      <div class="month-bar-lbl">${label}</div>`;
     wrap.querySelector('.month-bar').addEventListener('click', () => {
       selectedTrendMonth = selectedTrendMonth === m ? '' : m;
-      document.getElementById('trend-badge').textContent = selectedTrendMonth ? `filtered: ${d.month}` : 'click bar to filter';
+      const d = RAW.find(r => r.month_num === m);
+      document.getElementById('trend-badge').textContent = selectedTrendMonth ? `filtered: ${d?.month}` : 'click bar to filter';
       render();
     });
     el.appendChild(wrap);
@@ -509,57 +761,43 @@ function renderTrend() {
 
 function renderDonut(data) {
   const counts = { Finish: 0, Run: 0, WIP: 0 };
-  data.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
-  const total = data.length || 1;
+  data.forEach(r => { if (r.status in counts) counts[r.status]++; });
+  const total  = data.length || 1;
   const colors = { Finish: '#2ecc8a', Run: '#4f8ef7', WIP: '#f5a623' };
-  const svg = document.getElementById('donut-svg');
+  const svg    = document.getElementById('donut-svg');
   const legend = document.getElementById('donut-legend');
   svg.innerHTML = ''; legend.innerHTML = '';
-  const cx = 65, cy = 65, r = 48, ir = 30;
-  let startAngle = -Math.PI / 2;
+  const cx = 65, cy = 65, R = 48, ir = 30;
+  let angle = -Math.PI / 2;
   Object.entries(counts).forEach(([status, count]) => {
-    const angle = (count / total) * 2 * Math.PI;
-    if (angle === 0) return;
-    const endAngle = startAngle + angle;
-    const x1 = cx + r * Math.cos(startAngle), y1 = cy + r * Math.sin(startAngle);
-    const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
-    const ix1 = cx + ir * Math.cos(endAngle), iy1 = cy + ir * Math.sin(endAngle);
-    const ix2 = cx + ir * Math.cos(startAngle), iy2 = cy + ir * Math.sin(startAngle);
-    const large = angle > Math.PI ? 1 : 0;
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${ir} ${ir} 0 ${large} 0 ${ix2} ${iy2} Z`);
-    path.setAttribute('fill', colors[status]);
-    path.setAttribute('opacity', '0.9');
-    svg.appendChild(path);
-    startAngle = endAngle;
-    legend.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${colors[status]}"></div><span style="color:var(--muted)">${status}</span><span style="margin-left:auto;color:var(--text)">${count}</span></div>`;
+    if (!count) return;
+    const sweep = (count / total) * 2 * Math.PI;
+    const end   = angle + sweep;
+    const large = sweep > Math.PI ? 1 : 0;
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', `M ${cx+R*Math.cos(angle)} ${cy+R*Math.sin(angle)} A ${R} ${R} 0 ${large} 1 ${cx+R*Math.cos(end)} ${cy+R*Math.sin(end)} L ${cx+ir*Math.cos(end)} ${cy+ir*Math.sin(end)} A ${ir} ${ir} 0 ${large} 0 ${cx+ir*Math.cos(angle)} ${cy+ir*Math.sin(angle)} Z`);
+    p.setAttribute('fill', colors[status]); p.setAttribute('opacity', '0.9');
+    svg.appendChild(p);
+    angle = end;
+    legend.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${colors[status]}"></div><span style="color:var(--muted)">${status}</span><span style="margin-left:auto;color:var(--text);padding-left:12px">${count}</span></div>`;
   });
-  // center text
   const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  t.setAttribute('x', cx); t.setAttribute('y', cy + 5);
-  t.setAttribute('text-anchor', 'middle');
-  t.setAttribute('fill', '#e8ecff');
-  t.setAttribute('font-family', 'Syne, sans-serif');
-  t.setAttribute('font-size', '18');
-  t.setAttribute('font-weight', '700');
-  t.textContent = total;
-  svg.appendChild(t);
+  t.setAttribute('x', cx); t.setAttribute('y', cy + 6);
+  t.setAttribute('text-anchor', 'middle'); t.setAttribute('fill', '#e8ecff');
+  t.setAttribute('font-family', 'Syne,sans-serif'); t.setAttribute('font-size', '18'); t.setAttribute('font-weight', '700');
+  t.textContent = data.length; svg.appendChild(t);
 }
 
 function renderBarChart(el, items, colorFn) {
   const max = Math.max(...items.map(i => i.val), 1);
   el.innerHTML = '';
   items.slice(0, 10).forEach(item => {
-    const pct = (item.val / max) * 100;
+    const pct   = (item.val / max) * 100;
     const color = colorFn(item.val, max);
-    el.innerHTML += `
-      <div class="bar-row">
-        <div class="bar-label" title="${item.label}">${item.label}</div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${pct}%;background:${color}">${item.val > 3 ? item.val : ''}</div>
-        </div>
-        <div class="bar-val">${item.val}</div>
-      </div>`;
+    el.innerHTML += `<div class="bar-row">
+      <div class="bar-label" title="${item.label}">${item.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}">${item.val > 3 ? item.val : ''}</div></div>
+      <div class="bar-val">${item.val}</div></div>`;
   });
 }
 
@@ -567,84 +805,75 @@ function renderTopClients(data) {
   const map = {};
   data.forEach(r => { map[r.client] = (map[r.client] || 0) + r.site_count; });
   const items = Object.entries(map).sort((a,b) => b[1]-a[1]).map(([label, val]) => ({label, val}));
-  renderBarChart(document.getElementById('top-clients-chart'), items, (v, m) => {
-    const g = Math.round(40 + (v/m)*180);
-    return `rgb(79,${g},247)`;
-  });
+  renderBarChart(document.getElementById('top-clients-chart'), items, (v, m) => `rgb(79,${Math.round(40+(v/m)*180)},247)`);
 }
 
 function renderTopSites(data) {
   const map = {};
   ALL_SITES.forEach(s => map[s] = 0);
-  data.forEach(r => r.sites.forEach(s => { map[s] = (map[s] || 0) + 1; }));
-  const items = Object.entries(map).sort((a,b) => b[1]-a[1]).map(([label, val]) => ({label, val}));
+  data.forEach(r => r.sites.forEach(s => { map[s] = (map[s]||0) + 1; }));
+  const items = Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([label,val])=>({label,val}));
   renderBarChart(document.getElementById('top-sites-chart'), items, (v, m) => {
-    const pct = v / m;
-    if (pct > 0.7) return '#2ecc8a';
-    if (pct > 0.4) return '#4f8ef7';
-    return '#7c5cfc';
+    const p = v/m; return p > 0.7 ? '#2ecc8a' : p > 0.4 ? '#4f8ef7' : '#7c5cfc';
   });
 }
 
 function renderHeatmap(data) {
   const map = {};
   ALL_SITES.forEach(s => map[s] = 0);
-  data.forEach(r => r.sites.forEach(s => { map[s] = (map[s] || 0) + 1; }));
-  const max = Math.max(...Object.values(map), 1);
+  data.forEach(r => r.sites.forEach(s => { map[s] = (map[s]||0)+1; }));
+  const max  = Math.max(...Object.values(map), 1);
   const grid = document.getElementById('heatmap-grid');
   grid.innerHTML = '';
   ALL_SITES.forEach(site => {
     const count = map[site];
-    const cell = document.createElement('div');
+    const cell  = document.createElement('div');
     cell.className = 'hmap-cell';
     cell.style.background = heatColor(count, max);
-    cell.innerHTML = `<div class="site-name">${site}</div><div class="site-count" style="color:${textColor(count, max)}">${count}</div>`;
+    cell.innerHTML = `<div class="site-name">${site}</div><div class="site-count" style="color:${heatText(count,max)}">${count}</div>`;
     cell.addEventListener('click', () => showSiteDetail(site, data));
     grid.appendChild(cell);
   });
 }
 
 function showSiteDetail(site, data) {
-  document.getElementById('site-detail-title').textContent = `Campaigns at ${site}`;
-  const campaigns = data.filter(r => r.sites.includes(site));
+  document.getElementById('site-detail-title').textContent = `Campaigns at — ${site}`;
+  const rows    = data.filter(r => r.sites.includes(site));
   const content = document.getElementById('site-detail-content');
-  if (!campaigns.length) { content.innerHTML = '<div class="empty-state">No campaigns for this site in the selected period.</div>'; return; }
+  if (!rows.length) { content.innerHTML = '<div class="empty-state">No campaigns for this site in the selected period.</div>'; return; }
   content.innerHTML = `<div class="table-wrap"><table>
     <thead><tr><th>Client</th><th>Campaign</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>INV</th></tr></thead>
-    <tbody>${campaigns.map(r => `<tr>
-      <td>${r.client}</td><td>${r.campaign || '—'}</td>
-      <td>${r.start}</td><td>${r.end || '—'}</td>
-      <td>${r.days}</td><td>${statusPill(r.status)}</td>
-      <td style="color:var(--muted)">${r.inv || '—'}</td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
+    <tbody>${rows.map(r => `<tr>
+      <td><strong>${r.client}</strong></td><td style="color:var(--muted)">${r.campaign||'—'}</td>
+      <td>${r.start}</td><td>${r.end}</td>
+      <td style="color:var(--muted)">${r.days}</td><td>${statusPill(r.status)}</td>
+      <td style="color:var(--dim);font-size:0.63rem">${r.inv||'—'}</td>
+    </tr>`).join('')}</tbody></table></div>`;
 }
 
 function renderCampaignTable(data) {
   document.getElementById('campaign-count-badge').textContent = `${data.length} entries`;
-  const tbody = document.getElementById('campaign-tbody');
-  tbody.innerHTML = data.map((r, i) => `<tr>
+  document.getElementById('campaign-tbody').innerHTML = data.map((r, i) => `<tr>
     <td style="color:var(--dim)">${i+1}</td>
     <td><strong>${r.client}</strong></td>
-    <td style="color:var(--muted)">${r.campaign || '—'}</td>
-    <td>${r.start}</td>
-    <td>${r.end || '—'}</td>
+    <td style="color:var(--muted)">${r.campaign||'—'}</td>
+    <td>${r.start}</td><td>${r.end}</td>
     <td style="color:var(--muted)">${r.days}</td>
     <td>${statusPill(r.status)}</td>
-    <td style="color:var(--dim);font-size:0.65rem">${r.inv || '—'}</td>
-    <td><div class="site-tags">${r.sites.map(s => `<span class="site-tag">${s}</span>`).join('')}</div></td>
+    <td style="color:var(--dim);font-size:0.62rem">${r.inv||'—'}</td>
+    <td><div class="site-tags">${r.sites.map(s=>`<span class="site-tag">${s}</span>`).join('')}</div></td>
     <td style="color:var(--accent);font-family:'Syne',sans-serif;font-weight:700">${r.site_count}</td>
   </tr>`).join('');
 }
 
+// ─────────────────────────────────────────────
+//  MAIN RENDER
+// ─────────────────────────────────────────────
 function render() {
+  renderFilterChips();
   const data = getFiltered();
   if (activeView === 'overview') {
-    renderKPIs(data);
-    renderTrend();
-    renderDonut(data);
-    renderTopClients(data);
-    renderTopSites(data);
+    renderKPIs(data); renderTrend(); renderDonut(data); renderTopClients(data); renderTopSites(data);
   } else if (activeView === 'site') {
     renderHeatmap(data);
     document.getElementById('site-detail-title').textContent = 'Select a site above to see campaigns';
@@ -654,25 +883,53 @@ function render() {
   }
 }
 
-// Events
+// ─────────────────────────────────────────────
+//  EVENTS
+// ─────────────────────────────────────────────
 document.getElementById('month-filter').addEventListener('change', e => { selectedMonth = e.target.value; selectedTrendMonth = ''; render(); });
-document.getElementById('status-filter').addEventListener('change', e => { selectedStatus = e.target.value; render(); });
+
+document.querySelectorAll('.status-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedStatus = btn.dataset.status;
+  render();
+}));
+
 document.getElementById('search-input').addEventListener('input', e => { searchQuery = e.target.value; render(); });
 
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeView = btn.dataset.view;
-    document.getElementById('overview-view').classList.toggle('hidden', activeView !== 'overview');
-    document.getElementById('site-view').classList.toggle('active', activeView === 'site');
-    document.getElementById('campaign-view').classList.toggle('active', activeView === 'campaign');
-    render();
-  });
+// Site dropdown toggle
+const siteFilterBtn = document.getElementById('site-filter-btn');
+const siteDropdown  = document.getElementById('site-dropdown');
+siteFilterBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const isOpen = siteDropdown.classList.toggle('open');
+  siteFilterBtn.classList.toggle('open', isOpen);
+  if (isOpen) buildSiteCheckboxes();
 });
+document.addEventListener('click', e => {
+  if (!siteDropdown.contains(e.target) && e.target !== siteFilterBtn) {
+    siteDropdown.classList.remove('open');
+    siteFilterBtn.classList.remove('open');
+  }
+});
+document.getElementById('site-search').addEventListener('input', e => buildSiteCheckboxes(e.target.value));
 
-// Init
-render();
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeView = btn.dataset.view;
+  document.getElementById('overview-view').classList.toggle('hidden', activeView !== 'overview');
+  document.getElementById('site-view').classList.toggle('active', activeView === 'site');
+  document.getElementById('campaign-view').classList.toggle('active', activeView === 'campaign');
+  render();
+}));
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+loadData();
+setInterval(loadData, REFRESH_INTERVAL_MS);
 </script>
 </body>
 </html>
