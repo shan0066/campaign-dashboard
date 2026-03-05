@@ -6,352 +6,221 @@
 <title>Campaign Tracking Dashboard 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0c0f1a;
-    --surface: #13172b;
-    --surface2: #1a1f38;
-    --border: #252a45;
-    --accent: #4f8ef7;
-    --accent2: #7c5cfc;
-    --green: #2ecc8a;
-    --amber: #f5a623;
-    --red: #ff5c6c;
-    --text: #e8ecff;
-    --muted: #6b7299;
-    --dim: #3d4468;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Mono', monospace;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+:root {
+  --bg:#0c0f1a;--surface:#13172b;--surface2:#1a1f38;--border:#252a45;
+  --accent:#4f8ef7;--accent2:#7c5cfc;--green:#2ecc8a;--amber:#f5a623;
+  --red:#ff5c6c;--text:#e8ecff;--muted:#6b7299;--dim:#3d4468;
+  --grad1:#4f8ef7;--grad2:#7c5cfc;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s}
+#loading-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.loader-ring{width:56px;height:56px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:.72rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+.loader-sub{font-size:.6rem;color:var(--dim)}
+#error-banner{display:none;background:rgba(255,92,108,.1);border:1px solid rgba(255,92,108,.3);color:var(--red);padding:12px 32px;font-size:.72rem;text-align:center}
+header{background:var(--bg);border-bottom:1px solid var(--border);padding:18px 32px;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1700px;margin:auto;gap:14px;flex-wrap:wrap}
+.logo-area h1{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.03em;color:#fff}
+.logo-area h1 span{background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-area p{font-size:.62rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-top:2px}
+.header-right{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.header-stats{display:flex;gap:22px}
+.hstat{text-align:right}
+.hstat-val{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hstat-lbl{font-size:.56rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+#last-updated{font-size:.58rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 9px;font-family:'DM Mono',monospace;font-size:.6rem;cursor:pointer;transition:all .2s}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-  /* ── LOADING OVERLAY ── */
-  #loading-overlay {
-    position: fixed; inset: 0; z-index: 9999;
-    background: var(--bg);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-  }
-  .loader-ring {
-    width: 56px; height: 56px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loader-text { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
-  .loader-sub  { font-size: 0.6rem; color: var(--dim); }
+/* THEME PANEL */
+#theme-panel{position:fixed;top:0;right:0;bottom:0;width:310px;background:var(--surface);border-left:1px solid var(--border);z-index:500;padding:22px;overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+#theme-panel.open{transform:translateX(0)}
+.tp-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.tp-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.tp-close:hover{color:var(--text)}
+.tp-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:14px 0 7px}
+.theme-presets{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.theme-preset{border-radius:9px;padding:11px 9px;cursor:pointer;border:2px solid transparent;transition:all .2s;font-size:.66rem;font-weight:600;text-align:center}
+.theme-preset:hover{border-color:rgba(255,255,255,.4)}
+.theme-preset.active{border-color:#fff!important}
+.grad-options{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.grad-swatch{height:34px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.grad-swatch:hover{transform:scale(1.08)}
+.grad-swatch.active{border-color:#fff}
+.color-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.color-row label{font-size:.63rem;color:var(--muted);flex:1}
+.color-row input[type=color]{width:38px;height:26px;border-radius:5px;border:1px solid var(--border);padding:2px;cursor:pointer;background:var(--surface2)}
+.apply-btn{width:100%;margin-top:9px;padding:8px;background:linear-gradient(90deg,var(--grad1),var(--grad2));border:none;border-radius:7px;color:#fff;font-family:'DM Mono',monospace;font-size:.7rem;cursor:pointer;font-weight:600;transition:opacity .2s}
+.apply-btn:hover{opacity:.85}
 
-  /* ── ERROR BANNER ── */
-  #error-banner {
-    display: none;
-    background: rgba(255,92,108,0.1);
-    border: 1px solid rgba(255,92,108,0.3);
-    color: var(--red);
-    padding: 12px 40px;
-    font-size: 0.72rem;
-    text-align: center;
-  }
+/* CONTROLS */
+.controls{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 32px}
+.controls-inner{max-width:1700px;margin:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ctrl-label{font-size:.59rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
+select,input[type=text]{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:.72rem;padding:6px 10px;border-radius:6px;outline:none;cursor:pointer;transition:border-color .2s}
+select:hover,input[type=text]:hover,select:focus,input[type=text]:focus{border-color:var(--accent)}
+.status-toggle-group{display:flex;gap:2px}
+.status-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:.65rem;cursor:pointer;transition:all .18s;white-space:nowrap}
+.status-btn:hover{border-color:var(--accent);color:var(--text)}
+.status-btn.active.all{background:var(--accent);border-color:var(--accent);color:#fff}
+.status-btn.active.finish{background:var(--green);border-color:var(--green);color:#fff}
+.status-btn.active.run{background:var(--accent);border-color:var(--accent);color:#fff}
+.status-btn.active.wip{background:var(--amber);border-color:var(--amber);color:#fff}
+.toggle-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:.65rem;cursor:pointer;transition:all .18s;white-space:nowrap}
+.toggle-btn:hover{border-color:var(--accent);color:var(--text)}
+.toggle-btn.active-green{background:var(--green);border-color:var(--green);color:#111;font-weight:700}
+.toggle-btn.active-amber{background:var(--amber);border-color:var(--amber);color:#111;font-weight:700}
+.site-filter-wrap{position:relative}
+.site-filter-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:.72rem;cursor:pointer;transition:border-color .2s;white-space:nowrap;min-width:108px;text-align:left}
+.site-filter-btn:hover,.site-filter-btn.open{border-color:var(--accent)}
+#sfc{background:var(--accent);color:#fff;border-radius:10px;padding:1px 5px;font-size:.56rem;margin-left:3px;display:none}
+#sfc.v{display:inline}
+.site-dropdown{display:none;position:absolute;top:calc(100% + 5px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;z-index:300;width:340px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.site-dropdown.open{display:block}
+.site-sel-all{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'DM Mono',monospace;font-size:.61rem;cursor:pointer}
+.site-sel-all:hover{border-color:var(--accent);color:var(--text)}
+.site-checkbox-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-height:240px;overflow-y:auto;margin-top:4px}
+.site-cb-item{display:flex;align-items:center;gap:3px;padding:4px 5px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .14s;font-size:.6rem;color:var(--muted)}
+.site-cb-item:hover{border-color:var(--accent);color:var(--text)}
+.site-cb-item.checked{border-color:var(--accent);background:rgba(79,142,247,.14);color:var(--accent)}
+.site-cb-item input{display:none}
+.tab-btns{display:flex;gap:3px;margin-left:auto}
+.tab-btn{padding:5px 13px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:.67rem;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:linear-gradient(90deg,var(--grad1),var(--grad2));border-color:transparent;color:#fff}
+.tab-btn:hover:not(.active){border-color:var(--accent);color:var(--text)}
 
-  /* ── LAST UPDATED ── */
-  #last-updated {
-    font-size: 0.6rem; color: var(--muted);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .live-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .refresh-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 5px;
-    padding: 3px 8px;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+/* FILTER CHIPS */
+#active-filters{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:6px 32px}
+#afi{max-width:1700px;margin:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;background:rgba(79,142,247,.11);border:1px solid rgba(79,142,247,.25);color:var(--accent);font-size:.6rem;cursor:pointer;transition:all .15s}
+.filter-chip:hover{background:rgba(255,92,108,.11);border-color:rgba(255,92,108,.25);color:var(--red)}
+.clear-all-btn{margin-left:auto;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:.59rem;cursor:pointer}
+.clear-all-btn:hover{border-color:var(--red);color:var(--red)}
 
-  /* ── HEADER ── */
-  header {
-    background: linear-gradient(135deg, #0c0f1a 0%, #131a2e 60%, #0f1625 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 24px 40px 20px;
-    position: sticky; top: 0; z-index: 100;
-    backdrop-filter: blur(20px);
-  }
-  .header-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1600px; margin: auto; gap: 20px; flex-wrap: wrap; }
-  .logo-area h1 { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
-  .logo-area h1 span { color: var(--accent); }
-  .logo-area p { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
-  .header-right { display: flex; align-items: center; gap: 32px; }
-  .header-stats { display: flex; gap: 28px; }
-  .hstat { text-align: right; }
-  .hstat-val { font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
-  .hstat-lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+/* MAIN */
+main{max-width:1700px;margin:auto;padding:22px 32px}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:20px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:17px 18px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
+.kpi-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px}
+.kpi-card.c1::before{background:linear-gradient(90deg,var(--grad1),var(--grad2))}
+.kpi-card.c2::before{background:linear-gradient(90deg,var(--grad2),var(--grad1))}
+.kpi-card.c3::before{background:linear-gradient(90deg,var(--green),#1aa870)}
+.kpi-card.c4::before{background:linear-gradient(90deg,var(--amber),#d4890a)}
+.kpi-card.c5::before{background:linear-gradient(90deg,var(--red),#c0324a)}
+.kpi-icon{font-size:1.1rem;margin-bottom:6px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;line-height:1;background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-card.c3 .kpi-val{background:linear-gradient(90deg,var(--green),#1aa870);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-card.c4 .kpi-val{background:linear-gradient(90deg,var(--amber),#d4890a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-card.c5 .kpi-val{background:linear-gradient(90deg,var(--red),#c0324a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi-lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:4px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:18px}
+.full-row{margin-bottom:18px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:17px}
+.panel-title{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;gap:7px}
+.panel-badge{font-size:.57rem;padding:2px 7px;border-radius:20px;background:rgba(79,142,247,.09);color:var(--accent);font-weight:400;white-space:nowrap}
+.section-title{font-size:.63rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.bar-chart{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{font-size:.63rem;color:var(--muted);width:88px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.bar-track{flex:1;height:19px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:7px;font-size:.58rem;color:#fff;font-weight:500;transition:width .5s cubic-bezier(.16,1,.3,1)}
+.bar-val{font-size:.63rem;color:var(--text);width:22px;flex-shrink:0;text-align:right}
+.month-bars{display:flex;align-items:flex-end;gap:4px;height:78px}
+.month-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0}
+.month-bar{width:100%;border-radius:3px 3px 0 0;min-height:3px;cursor:pointer;background:linear-gradient(to top,var(--grad1),var(--grad2));transition:opacity .2s}
+.month-bar:hover{opacity:.7}
+.month-bar.selected{background:linear-gradient(to top,var(--green),#2ecc8a55)}
+.month-bar-lbl{font-size:.49rem;color:var(--muted);overflow:hidden;max-width:100%;text-align:center}
+.month-bar-val{font-size:.54rem;color:var(--accent)}
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{display:flex;flex-direction:column;gap:8px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.67rem}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.heatmap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(65px,1fr));gap:5px}
+.hmap-cell{background:var(--surface2);border-radius:7px;padding:7px 4px;text-align:center;cursor:pointer;transition:all .18s;border:1px solid transparent}
+.hmap-cell:hover{border-color:var(--accent);transform:scale(1.06)}
+.hmap-cell .site-name{font-size:.55rem;color:var(--muted);text-transform:uppercase}
+.hmap-cell .site-count{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700}
 
-  /* ── CONTROLS ── */
-  .controls {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 40px;
-  }
-  .controls-inner { max-width: 1600px; margin: auto; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .ctrl-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); white-space: nowrap; }
+/* MATRIX */
+.matrix-wrap{overflow:auto;max-height:600px}
+.mtable{border-collapse:collapse;font-size:.62rem;min-width:100%}
+.mtable th{background:var(--surface2);padding:7px 7px;text-align:center;font-size:.56rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;position:sticky;top:0;z-index:2}
+.mtable th.rh{text-align:left;left:0;z-index:3;min-width:72px}
+.mtable td{padding:5px 6px;border:1px solid var(--border);text-align:center;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer}
+.mtable td.sl{font-family:'DM Mono',monospace;font-weight:400;font-size:.61rem;color:var(--muted);text-align:left;background:var(--surface2);position:sticky;left:0;z-index:1;white-space:nowrap}
+.mtable td:hover{outline:2px solid var(--accent)}
+.mtable .tr-total td{font-size:.7rem}
 
-  select, input[type=text] {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    padding: 7px 12px;
-    border-radius: 6px;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  select:hover, input[type=text]:hover { border-color: var(--accent); }
-  select:focus, input[type=text]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,142,247,0.15); }
+/* PILLS */
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.58rem;font-weight:500}
+.pill-finish{background:rgba(46,204,138,.13);color:var(--green)}
+.pill-run{background:rgba(79,142,247,.13);color:var(--accent)}
+.pill-wip{background:rgba(245,166,35,.13);color:var(--amber)}
+.no-inv{font-size:.57rem;color:var(--red);background:rgba(255,92,108,.11);padding:1px 5px;border-radius:3px}
 
-  /* Status toggle */
-  .status-toggle-group { display: flex; gap: 3px; }
-  .status-btn {
-    padding: 6px 12px; border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent; color: var(--muted);
-    font-family: 'DM Mono', monospace; font-size: 0.68rem;
-    cursor: pointer; transition: all 0.18s; white-space: nowrap;
-  }
-  .status-btn:hover { border-color: var(--accent); color: var(--text); }
-  .status-btn.active.all    { background: var(--accent);  border-color: var(--accent);  color: #fff; }
-  .status-btn.active.finish { background: var(--green);   border-color: var(--green);   color: #fff; }
-  .status-btn.active.run    { background: var(--accent);  border-color: var(--accent);  color: #fff; }
-  .status-btn.active.wip    { background: var(--amber);   border-color: var(--amber);   color: #fff; }
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:7px;max-height:520px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:.68rem}
+th{background:var(--surface2);padding:8px 11px;text-align:left;font-size:.57rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);white-space:nowrap;position:sticky;top:0;z-index:2}
+td{padding:7px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:hover td{background:rgba(79,142,247,.04)}
+tr:last-child td{border-bottom:none}
+.site-tags{display:flex;flex-wrap:wrap;gap:2px;max-width:350px}
+.site-tag{font-size:.5rem;padding:1px 4px;border-radius:3px;background:rgba(79,142,247,.09);color:var(--accent);border:1px solid rgba(79,142,247,.15)}
 
-  /* Site filter dropdown */
-  .site-filter-wrap { position: relative; }
-  .site-filter-btn {
-    padding: 7px 12px; border-radius: 6px;
-    border: 1px solid var(--border); background: var(--surface2);
-    color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem;
-    cursor: pointer; transition: border-color 0.2s; white-space: nowrap;
-    min-width: 115px; text-align: left;
-  }
-  .site-filter-btn:hover, .site-filter-btn.open { border-color: var(--accent); }
-  #site-filter-count {
-    background: var(--accent); color: #fff;
-    border-radius: 10px; padding: 1px 6px;
-    font-size: 0.58rem; margin-left: 4px; display: none;
-  }
-  #site-filter-count.visible { display: inline; }
-  .site-dropdown {
-    display: none; position: absolute;
-    top: calc(100% + 6px); left: 0;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px;
-    z-index: 300; width: 340px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  }
-  .site-dropdown.open { display: block; }
-  .site-sel-all {
-    padding: 4px 9px; border-radius: 5px;
-    border: 1px solid var(--border); background: var(--surface2);
-    color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.63rem; cursor: pointer;
-  }
-  .site-sel-all:hover { border-color: var(--accent); color: var(--text); }
-  .site-checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-height: 260px; overflow-y: auto; margin-top: 4px; }
-  .site-cb-item {
-    display: flex; align-items: center; gap: 4px;
-    padding: 5px 6px; border-radius: 5px;
-    border: 1px solid var(--border); background: var(--surface2);
-    cursor: pointer; transition: all 0.15s;
-    font-size: 0.63rem; color: var(--muted);
-  }
-  .site-cb-item:hover { border-color: var(--accent); color: var(--text); }
-  .site-cb-item.checked { border-color: var(--accent); background: rgba(79,142,247,0.15); color: var(--accent); }
-  .site-cb-item input { display: none; }
+/* VIEWS */
+#site-view,#campaign-view,#matrix-view{display:none}
+#site-view.active,#campaign-view.active,#matrix-view.active{display:block}
+#overview-view.hidden{display:none}
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:.75rem}
 
-  /* Tabs */
-  .tab-btns { display: flex; gap: 4px; margin-left: auto; }
-  .tab-btn {
-    padding: 7px 16px; border-radius: 6px;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); font-family: 'DM Mono', monospace;
-    font-size: 0.7rem; cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
-  }
-  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .tab-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+/* MODAL */
+#modal-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.7);align-items:center;justify-content:center}
+#modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:22px;max-width:700px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 16px 60px rgba(0,0,0,.6)}
+.modal-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.modal-close:hover{color:var(--text)}
 
-  /* ── FILTER CHIPS ── */
-  #active-filters { display:none; background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 40px; }
-  #active-filters-inner { max-width:1600px; margin:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .filter-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 10px; border-radius: 20px;
-    background: rgba(79,142,247,0.15); border: 1px solid rgba(79,142,247,0.3);
-    color: var(--accent); font-size: 0.63rem; cursor: pointer; transition: all 0.15s;
-  }
-  .filter-chip:hover { background: rgba(255,92,108,0.15); border-color: rgba(255,92,108,0.3); color: var(--red); }
-  .clear-all-btn {
-    margin-left: auto; padding: 4px 10px; border-radius: 5px;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); font-family: 'DM Mono',monospace; font-size: 0.6rem; cursor: pointer;
-  }
-  .clear-all-btn:hover { border-color: var(--red); color: var(--red); }
-
-  /* ── MAIN ── */
-  main { max-width: 1600px; margin: auto; padding: 28px 40px; }
-
-  /* KPI */
-  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-  .kpi-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px 22px;
-    position: relative; overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .kpi-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-  .kpi-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; border-radius:12px 0 0 12px; }
-  .kpi-card.blue::before   { background: var(--accent);  }
-  .kpi-card.purple::before { background: var(--accent2); }
-  .kpi-card.green::before  { background: var(--green);   }
-  .kpi-card.amber::before  { background: var(--amber);   }
-  .kpi-icon { font-size: 1.3rem; margin-bottom: 8px; }
-  .kpi-val  { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; line-height: 1; }
-  .kpi-card.blue   .kpi-val { color: var(--accent);  }
-  .kpi-card.purple .kpi-val { color: var(--accent2); }
-  .kpi-card.green  .kpi-val { color: var(--green);   }
-  .kpi-card.amber  .kpi-val { color: var(--amber);   }
-  .kpi-lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 5px; }
-
-  /* Layout */
-  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
-  .panel {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px;
-  }
-  .panel-title {
-    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700;
-    color: var(--text); margin-bottom: 16px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .panel-badge {
-    font-size: 0.6rem; padding: 3px 8px; border-radius: 20px;
-    background: rgba(79,142,247,0.12); color: var(--accent); font-weight: 400;
-  }
-  .section-title {
-    font-family: 'Syne', sans-serif; font-size: 0.7rem;
-    text-transform: uppercase; letter-spacing: 0.15em;
-    color: var(--muted); margin-bottom: 12px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
-
-  /* Bar chart */
-  .bar-chart { display: flex; flex-direction: column; gap: 9px; }
-  .bar-row   { display: flex; align-items: center; gap: 10px; }
-  .bar-label { font-size: 0.68rem; color: var(--muted); width: 88px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-  .bar-fill  {
-    height: 100%; border-radius: 4px;
-    display: flex; align-items: center; padding-left: 7px;
-    font-size: 0.6rem; color: #fff; font-weight: 500;
-    transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .bar-val { font-size: 0.68rem; color: var(--text); width: 26px; flex-shrink: 0; text-align: right; }
-
-  /* Month trend */
-  .month-bars { display: flex; align-items: flex-end; gap: 5px; height: 80px; }
-  .month-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
-  .month-bar {
-    width: 100%; background: linear-gradient(to top, var(--accent), var(--accent2));
-    border-radius: 3px 3px 0 0; min-height: 3px;
-    transition: opacity 0.2s; cursor: pointer;
-  }
-  .month-bar:hover { opacity: 0.75; }
-  .month-bar.selected { background: linear-gradient(to top, var(--green), #2ecc8a66); }
-  .month-bar-lbl { font-size: 0.52rem; color: var(--muted); }
-  .month-bar-val { font-size: 0.58rem; color: var(--accent); }
-
-  /* Donut */
-  .donut-wrap  { display: flex; align-items: center; gap: 20px; }
-  svg.donut    { flex-shrink: 0; }
-  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; }
-  .legend-dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-
-  /* Heatmap */
-  .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 5px; }
-  .hmap-cell {
-    background: var(--surface2); border-radius: 6px;
-    padding: 8px 5px; text-align: center; cursor: pointer;
-    transition: all 0.2s; border: 1px solid transparent;
-  }
-  .hmap-cell:hover { border-color: var(--accent); transform: scale(1.05); }
-  .hmap-cell .site-name  { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-  .hmap-cell .site-count { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; }
-
-  /* Status pills */
-  .pill         { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.04em; }
-  .pill-finish  { background: rgba(46,204,138,0.15); color: var(--green); }
-  .pill-run     { background: rgba(79,142,247,0.15);  color: var(--accent); }
-  .pill-wip     { background: rgba(245,166,35,0.15);  color: var(--amber); }
-
-  /* Table */
-  .table-wrap { overflow-x: auto; border-radius: 8px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
-  th {
-    background: var(--surface2); padding: 9px 13px;
-    text-align: left; font-size: 0.6rem;
-    text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
-    white-space: nowrap; position: sticky; top: 0;
-  }
-  td { padding: 8px 13px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
-  tr:hover td { background: rgba(79,142,247,0.04); }
-  tr:last-child td { border-bottom: none; }
-  .site-tags { display: flex; flex-wrap: wrap; gap: 3px; max-width: 380px; }
-  .site-tag  {
-    font-size: 0.53rem; padding: 1px 5px; border-radius: 3px;
-    background: rgba(79,142,247,0.1); color: var(--accent);
-    border: 1px solid rgba(79,142,247,0.18);
-  }
-
-  /* Views */
-  #site-view, #campaign-view { display: none; }
-  #site-view.active, #campaign-view.active { display: block; }
-  #overview-view.hidden { display: none; }
-  .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 0.78rem; }
-
-  @media (max-width: 900px) {
-    header, .controls, #active-filters, main { padding-left: 16px; padding-right: 16px; }
-    .kpi-grid { grid-template-columns: repeat(2,1fr); }
-    .two-col  { grid-template-columns: 1fr; }
-    .header-stats { display: none; }
-  }
+@media(max-width:1000px){
+  header,.controls,#active-filters,main{padding-left:12px;padding-right:12px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr}
+  .header-stats{display:none}
+}
 </style>
 </head>
 <body>
 
-<!-- Loading Overlay -->
 <div id="loading-overlay">
   <div class="loader-ring"></div>
   <div class="loader-text">Connecting to Google Sheets…</div>
   <div class="loader-sub">Fetching live campaign data</div>
 </div>
-
-<!-- Error Banner -->
 <div id="error-banner"></div>
+
+<!-- THEME PANEL -->
+<div id="theme-panel">
+  <div class="tp-title">🎨 Theme Studio <button class="tp-close" onclick="closeTP()">✕</button></div>
+  <div class="tp-lbl">Presets</div>
+  <div class="theme-presets" id="tp-presets"></div>
+  <div class="tp-lbl">Accent Gradient</div>
+  <div class="grad-options" id="tp-grads"></div>
+  <div class="tp-lbl">Custom Colors</div>
+  <div class="color-row"><label>Background</label><input type="color" id="cp-bg" value="#0c0f1a"></div>
+  <div class="color-row"><label>Surface</label><input type="color" id="cp-sur" value="#13172b"></div>
+  <div class="color-row"><label>Accent</label><input type="color" id="cp-ac1" value="#4f8ef7"></div>
+  <div class="color-row"><label>Accent 2</label><input type="color" id="cp-ac2" value="#7c5cfc"></div>
+  <div class="color-row"><label>Text</label><input type="color" id="cp-txt" value="#e8ecff"></div>
+  <button class="apply-btn" onclick="applyCustom()">Apply Custom Theme</button>
+</div>
 
 <header>
   <div class="header-inner">
@@ -361,23 +230,16 @@
     </div>
     <div class="header-right">
       <div class="header-stats">
-        <div class="hstat">
-          <div class="hstat-val" id="hs-total">—</div>
-          <div class="hstat-lbl">Total Campaigns</div>
-        </div>
-        <div class="hstat">
-          <div class="hstat-val" id="hs-sites">—</div>
-          <div class="hstat-lbl">Active Sites</div>
-        </div>
-        <div class="hstat">
-          <div class="hstat-val" id="hs-clients">—</div>
-          <div class="hstat-lbl">Clients</div>
-        </div>
+        <div class="hstat"><div class="hstat-val" id="hs-total">—</div><div class="hstat-lbl">Campaigns</div></div>
+        <div class="hstat"><div class="hstat-val" id="hs-sites">—</div><div class="hstat-lbl">Sites</div></div>
+        <div class="hstat"><div class="hstat-val" id="hs-clients">—</div><div class="hstat-lbl">Clients</div></div>
+        <div class="hstat"><div class="hstat-val" id="hs-noinv" style="background:linear-gradient(90deg,var(--red),#c0324a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">—</div><div class="hstat-lbl">No Invoice</div></div>
       </div>
       <div id="last-updated">
         <span class="live-dot"></span>
-        <span id="last-updated-text">Loading…</span>
-        <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+        <span id="lu-text">Loading…</span>
+        <button class="icon-btn" onclick="loadData()">↻ Refresh</button>
+        <button class="icon-btn" onclick="openTP()">🎨 Theme</button>
       </div>
     </div>
   </div>
@@ -390,546 +252,515 @@
 
     <span class="ctrl-label">Status</span>
     <div class="status-toggle-group">
-      <button class="status-btn all active" data-status="">All</button>
-      <button class="status-btn finish"     data-status="Finish">✔ Finish</button>
-      <button class="status-btn run"        data-status="Run">▶ Run</button>
-      <button class="status-btn wip"        data-status="WIP">⏳ WIP</button>
+      <button class="status-btn all active" data-s="">All</button>
+      <button class="status-btn finish" data-s="Finish">✔ Finish</button>
+      <button class="status-btn run" data-s="Run">▶ Run</button>
+      <button class="status-btn wip" data-s="WIP">⏳ WIP</button>
     </div>
 
     <span class="ctrl-label">Site</span>
     <div class="site-filter-wrap">
-      <button class="site-filter-btn" id="site-filter-btn">All Sites <span id="site-filter-count"></span> ▾</button>
-      <div class="site-dropdown" id="site-dropdown">
-        <input type="text" id="site-search" placeholder="Search sites…" style="width:100%;margin-bottom:8px">
-        <div style="display:flex;gap:6px;margin-bottom:10px">
-          <button class="site-sel-all" onclick="selectAllSites()">Select All</button>
-          <button class="site-sel-all" onclick="clearAllSites()">Clear</button>
+      <button class="site-filter-btn" id="sfb">All Sites <span id="sfc"></span> ▾</button>
+      <div class="site-dropdown" id="sdd">
+        <input type="text" id="ss" placeholder="Search sites…" style="width:100%;margin-bottom:6px">
+        <div style="display:flex;gap:5px;margin-bottom:7px">
+          <button class="site-sel-all" onclick="selectAll()">All</button>
+          <button class="site-sel-all" onclick="clearAll()">Clear</button>
         </div>
-        <div class="site-checkbox-grid" id="site-checkbox-grid"></div>
+        <div class="site-checkbox-grid" id="scg"></div>
       </div>
     </div>
 
+    <span class="ctrl-label">Full Month</span>
+    <button class="toggle-btn" id="fm-btn" onclick="toggleFM()">📅 Full Month Only</button>
+
+    <span class="ctrl-label">Invoice</span>
+    <button class="toggle-btn" id="ni-btn" onclick="toggleNI()">⚠ No Invoice</button>
+
     <span class="ctrl-label">Search</span>
-    <input type="text" id="search-input" placeholder="Client / Campaign…" style="width:155px">
+    <input type="text" id="search-input" placeholder="Client / Campaign…" style="width:140px">
 
     <div class="tab-btns">
-      <button class="tab-btn active" data-view="overview">Overview</button>
-      <button class="tab-btn"        data-view="site">By Site</button>
-      <button class="tab-btn"        data-view="campaign">Campaigns</button>
+      <button class="tab-btn active" data-v="overview">Overview</button>
+      <button class="tab-btn" data-v="site">By Site</button>
+      <button class="tab-btn" data-v="matrix">Site Matrix</button>
+      <button class="tab-btn" data-v="campaign">Campaigns</button>
     </div>
   </div>
 </div>
 
 <div id="active-filters">
-  <div id="active-filters-inner">
-    <span style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Active filters:</span>
-    <div id="filter-chips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
-    <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear All</button>
+  <div id="afi">
+    <span style="font-size:.57rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Filters:</span>
+    <div id="chips" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    <button class="clear-all-btn" onclick="clearAllF()">✕ Clear All</button>
   </div>
 </div>
 
 <main>
-  <!-- OVERVIEW -->
   <div id="overview-view">
     <div class="kpi-grid">
-      <div class="kpi-card blue">  <div class="kpi-icon">📋</div><div class="kpi-val" id="kpi-campaigns">—</div><div class="kpi-lbl">Campaign Entries</div></div>
-      <div class="kpi-card purple"><div class="kpi-icon">🏢</div><div class="kpi-val" id="kpi-clients">—</div><div class="kpi-lbl">Unique Clients</div></div>
-      <div class="kpi-card green"> <div class="kpi-icon">📍</div><div class="kpi-val" id="kpi-bookings">—</div><div class="kpi-lbl">Total Site Bookings</div></div>
-      <div class="kpi-card amber"> <div class="kpi-icon">⏱️</div><div class="kpi-val" id="kpi-avg">—</div><div class="kpi-lbl">Avg Sites / Campaign</div></div>
+      <div class="kpi-card c1"><div class="kpi-icon">📋</div><div class="kpi-val" id="kpi-c">—</div><div class="kpi-lbl">Campaign Entries</div></div>
+      <div class="kpi-card c2"><div class="kpi-icon">🏢</div><div class="kpi-val" id="kpi-cl">—</div><div class="kpi-lbl">Unique Clients</div></div>
+      <div class="kpi-card c3"><div class="kpi-icon">📍</div><div class="kpi-val" id="kpi-b">—</div><div class="kpi-lbl">Total Site Bookings</div></div>
+      <div class="kpi-card c4"><div class="kpi-icon">⏱️</div><div class="kpi-val" id="kpi-a">—</div><div class="kpi-lbl">Avg Sites / Campaign</div></div>
+      <div class="kpi-card c5"><div class="kpi-icon">⚠️</div><div class="kpi-val" id="kpi-ni">—</div><div class="kpi-lbl">No Invoice</div></div>
     </div>
     <div class="two-col">
       <div class="panel">
         <div class="panel-title">Monthly Campaign Volume <span class="panel-badge" id="trend-badge">click bar to filter</span></div>
-        <div class="section-title">campaigns started per month</div>
+        <div class="section-title">campaigns per month</div>
         <div class="month-bars" id="month-trend"></div>
       </div>
       <div class="panel">
         <div class="panel-title">Status Breakdown</div>
-        <div class="donut-wrap">
-          <svg class="donut" width="130" height="130" viewBox="0 0 130 130" id="donut-svg"></svg>
-          <div class="donut-legend" id="donut-legend"></div>
-        </div>
+        <div class="donut-wrap"><svg width="130" height="130" viewBox="0 0 130 130" id="donut-svg"></svg><div class="donut-legend" id="donut-legend"></div></div>
       </div>
     </div>
     <div class="two-col">
-      <div class="panel"><div class="panel-title">Top Clients by Site Bookings</div><div class="bar-chart" id="top-clients-chart"></div></div>
-      <div class="panel"><div class="panel-title">Most Booked Sites</div><div class="bar-chart" id="top-sites-chart"></div></div>
+      <div class="panel"><div class="panel-title">Top Clients by Site Bookings</div><div class="bar-chart" id="tc-chart"></div></div>
+      <div class="panel"><div class="panel-title">Most Booked Sites</div><div class="bar-chart" id="ts-chart"></div></div>
     </div>
   </div>
 
-  <!-- BY SITE -->
   <div id="site-view">
-    <div class="panel" style="margin-bottom:18px">
-      <div class="panel-title">All Sites — Campaign Count <span class="panel-badge">click a site to drill down</span></div>
-      <div class="heatmap-grid" id="heatmap-grid"></div>
+    <div class="panel full-row">
+      <div class="panel-title">All Sites — Campaign Count <span class="panel-badge">click a cell to drill down</span></div>
+      <div class="heatmap-grid" id="hmap"></div>
     </div>
     <div class="panel">
-      <div class="panel-title" id="site-detail-title">Select a site above to see campaigns</div>
-      <div id="site-detail-content"></div>
+      <div class="panel-title" id="sd-title">Select a site above</div>
+      <div id="sd-content"></div>
     </div>
   </div>
 
-  <!-- CAMPAIGNS -->
+  <div id="matrix-view">
+    <div class="panel full-row">
+      <div class="panel-title">Campaigns per Site per Month <span class="panel-badge">click any cell to see campaigns</span></div>
+      <div class="section-title">number of campaign entries per site × month</div>
+      <div class="matrix-wrap"><table class="mtable" id="mtable"></table></div>
+    </div>
+  </div>
+
   <div id="campaign-view">
     <div class="panel">
-      <div class="panel-title">All Campaign Entries <span class="panel-badge" id="campaign-count-badge">—</span></div>
+      <div class="panel-title">All Campaign Entries <span class="panel-badge" id="cc-badge">—</span></div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>#</th><th>Client</th><th>Campaign</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>INV</th><th>Sites</th><th>Count</th></tr></thead>
-          <tbody id="campaign-tbody"></tbody>
+          <tbody id="ctbody"></tbody>
         </table>
       </div>
     </div>
   </div>
 </main>
 
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title"><span id="modal-title-text">Campaigns</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
 <script>
-// ─────────────────────────────────────────────
-//  CONFIG
-// ─────────────────────────────────────────────
-const SHEET_URL = 'https://script.google.com/a/macros/skybluegroup.com/s/AKfycbxwmQ28eGEVrwoUekv5xhXmOK3LGV2L3unYl6hyBUWdZW5qwMAfkfTdU3eTjl-8n7Ki/exec';
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // auto-refresh every 5 minutes
+const SHEET_URL='https://script.google.com/a/macros/skybluegroup.com/s/AKfycbxwmQ28eGEVrwoUekv5xhXmOK3LGV2L3unYl6hyBUWdZW5qwMAfkfTdU3eTjl-8n7Ki/exec';
+const REFRESH_MS=5*60*1000;
+const SITE_COLS=['JTS','JSI A','JSI B','JKL A','JKL B','TM A','TM B','JLY A','JLY B','JC A','JC B','PS A','PS B','BB A','BB B','JML','SUN','1U','DU','BU1U','SS2','PBKJ','PJS','SW','IOI','BHP','PKNS A','PKNS B','POS A','POS B','WD A','WD B','ASUOB A','ASUOB B','JRHP','JSP A','JSP B','MNAI A','MNAI B','MNCG A','MNCG B','MNS A','MNS B','JCE','BRK','BS','FED A','FED B'];
+const MON_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-const SITE_COLUMNS = ['JTS','JSI A','JSI B','JKL A','JKL B','TM A','TM B','JLY A','JLY B','JC A','JC B','PS A','PS B','BB A','BB B','JML','SUN','1U','DU','BU1U','SS2','PBKJ','PJS','SW','IOI','BHP','PKNS A','PKNS B','POS A','POS B','WD A','WD B','ASUOB A','ASUOB B','JRHP','JSP A','JSP B','MNAI A','MNAI B','MNCG A','MNCG B','MNS A','MNS B','JCE','BRK','BS','FED A','FED B'];
+/* ── THEME ── */
+const THEMES=[
+  {name:'Midnight Blue',bg:'#0c0f1a',sur:'#13172b',sur2:'#1a1f38',brd:'#252a45',ac:'#4f8ef7',ac2:'#7c5cfc',txt:'#e8ecff',mut:'#6b7299',dim:'#3d4468',g1:'#4f8ef7',g2:'#7c5cfc',pb:'#0c0f1a',pa:'#4f8ef7'},
+  {name:'Forest Night',bg:'#0a1510',sur:'#111e14',sur2:'#182a1a',brd:'#213024',ac:'#2ecc8a',ac2:'#00c9a7',txt:'#e0f5eb',mut:'#5a8a6a',dim:'#2a4a32',g1:'#2ecc8a',g2:'#00c9a7',pb:'#0a1510',pa:'#2ecc8a'},
+  {name:'Crimson Night',bg:'#160a0a',sur:'#231010',sur2:'#2e1515',brd:'#3d1e1e',ac:'#ff5c6c',ac2:'#ff8c6a',txt:'#ffe8e8',mut:'#8a5a5a',dim:'#4a2828',g1:'#ff5c6c',g2:'#ff8c6a',pb:'#160a0a',pa:'#ff5c6c'},
+  {name:'Golden Dusk',bg:'#14100a',sur:'#1e1810',sur2:'#2a2018',brd:'#3d3020',ac:'#f5a623',ac2:'#ffcc44',txt:'#fff5e0',mut:'#8a7040',dim:'#4a3820',g1:'#f5a623',g2:'#ffcc44',pb:'#14100a',pa:'#f5a623'},
+  {name:'Arctic Light',bg:'#f0f4ff',sur:'#ffffff',sur2:'#e8eeff',brd:'#cdd5f0',ac:'#3b6ef5',ac2:'#6b3bf5',txt:'#1a1f38',mut:'#7080a8',dim:'#b0bbdc',g1:'#3b6ef5',g2:'#6b3bf5',pb:'#f0f4ff',pa:'#3b6ef5'},
+  {name:'Rose Quartz',bg:'#130a10',sur:'#1e1018',sur2:'#2a1522',brd:'#3d2035',ac:'#e879a0',ac2:'#b845d4',txt:'#ffe8f5',mut:'#8a5075',dim:'#4a2040',g1:'#e879a0',g2:'#b845d4',pb:'#130a10',pa:'#e879a0'},
+  {name:'Deep Ocean',bg:'#050d1a',sur:'#0a1628',sur2:'#0f2040',brd:'#1a3055',ac:'#00d4ff',ac2:'#0088ff',txt:'#e0f4ff',mut:'#4a7a9b',dim:'#1a3550',g1:'#00d4ff',g2:'#0088ff',pb:'#050d1a',pa:'#00d4ff'},
+  {name:'Obsidian',bg:'#0a0a0a',sur:'#141414',sur2:'#1e1e1e',brd:'#2a2a2a',ac:'#ffffff',ac2:'#aaaaaa',txt:'#ffffff',mut:'#666666',dim:'#333333',g1:'#ffffff',g2:'#aaaaaa',pb:'#0a0a0a',pa:'#ffffff'},
+];
+const GRADS=[
+  {n:'Blue-Purple',g1:'#4f8ef7',g2:'#7c5cfc'},{n:'Teal-Blue',g1:'#00c9ff',g2:'#4f8ef7'},
+  {n:'Green-Teal',g1:'#2ecc8a',g2:'#00c9ff'},{n:'Orange-Pink',g1:'#f5a623',g2:'#ff5c6c'},
+  {n:'Pink-Purple',g1:'#e879a0',g2:'#7c5cfc'},{n:'Gold-Orange',g1:'#ffcc44',g2:'#f5a623'},
+  {n:'Cyan-Green',g1:'#00e5ff',g2:'#2ecc8a'},{n:'Red-Orange',g1:'#ff5c6c',g2:'#ff8c6a'},
+  {n:'Indigo-Blue',g1:'#6b3bf5',g2:'#4f8ef7'},
+];
 
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
-let RAW = [];
-let ALL_SITES = [...SITE_COLUMNS];
-let months = [];
-let selectedMonth = '';
-let selectedStatus = '';
-let searchQuery = '';
-let activeView = 'overview';
-let selectedTrendMonth = '';
-let selectedSites = new Set();
-
-// ─────────────────────────────────────────────
-//  DATA FETCH & PARSE
-// ─────────────────────────────────────────────
-function parseDate(d) {
-  if (!d) return null;
-  const s = String(d).trim();
-  // Try DD/MM/YYYY
-  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
-  // Try YYYY-MM-DD
-  m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
-  // Try JS Date parsing as fallback
-  const dt = new Date(s);
-  return isNaN(dt) ? null : dt;
+function applyTheme(t){
+  const r=document.documentElement.style;
+  r.setProperty('--bg',t.bg);r.setProperty('--surface',t.sur);r.setProperty('--surface2',t.sur2);
+  r.setProperty('--border',t.brd);r.setProperty('--accent',t.ac);r.setProperty('--accent2',t.ac2);
+  r.setProperty('--text',t.txt);r.setProperty('--muted',t.mut);r.setProperty('--dim',t.dim);
+  r.setProperty('--grad1',t.g1);r.setProperty('--grad2',t.g2);
+  document.getElementById('loading-overlay').style.background=t.bg;
 }
+function applyGrad(g){
+  document.documentElement.style.setProperty('--grad1',g.g1);
+  document.documentElement.style.setProperty('--grad2',g.g2);
+}
+function applyCustom(){
+  const t={bg:$('cp-bg').value,sur:$('cp-sur').value,sur2:adj($('cp-sur').value,12),brd:adj($('cp-sur').value,22),ac:$('cp-ac1').value,ac2:$('cp-ac2').value,txt:$('cp-txt').value,mut:blend($('cp-bg').value,$('cp-txt').value,.5),dim:blend($('cp-bg').value,$('cp-txt').value,.25),g1:$('cp-ac1').value,g2:$('cp-ac2').value};
+  applyTheme(t);
+  document.querySelectorAll('.theme-preset').forEach(b=>b.classList.remove('active'));
+}
+function adj(hex,p){const n=parseInt(hex.replace('#',''),16);const r=Math.min(255,((n>>16)&255)+p),g=Math.min(255,((n>>8)&255)+p),b=Math.min(255,(n&255)+p);return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function blend(h1,h2,t){const n1=parseInt(h1.replace('#',''),16),n2=parseInt(h2.replace('#',''),16);const r=Math.round(((n1>>16)&255)*(1-t)+((n2>>16)&255)*t),g=Math.round(((n1>>8)&255)*(1-t)+((n2>>8)&255)*t),b=Math.round((n1&255)*(1-t)+(n2&255)*t);return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('')}
 
-function parseSheetData(rows) {
-  const MONTHS_LABEL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return rows.map(row => {
-    const sd = parseDate(row['Start Date']);
-    const ed = parseDate(row['End Date']);
-    if (!sd || !row['Client Name'] || !String(row['Client Name']).trim()) return null;
-
-    const activeSites = SITE_COLUMNS.filter(s => {
-      const v = String(row[s] || '').trim().toUpperCase();
-      return v === 'TRUE' || v === '1' || v === 'YES';
-    });
-
-    const mn = `${sd.getFullYear()}-${String(sd.getMonth()+1).padStart(2,'0')}`;
-    return {
-      client:     String(row['Client Name']).trim(),
-      campaign:   String(row['Campaign Name'] || '').trim(),
-      start:      `${String(sd.getDate()).padStart(2,'0')}/${String(sd.getMonth()+1).padStart(2,'0')}/${sd.getFullYear()}`,
-      end:        ed ? `${String(ed.getDate()).padStart(2,'0')}/${String(ed.getMonth()+1).padStart(2,'0')}/${ed.getFullYear()}` : '—',
-      days:       String(row['Days'] || '').trim(),
-      status:     String(row['Status'] || '').trim(),
-      inv:        String(row['INV'] || '').trim(),
-      month:      `${MONTHS_LABEL[sd.getMonth()]} ${sd.getFullYear()}`,
-      month_num:  mn,
-      sites:      activeSites,
-      site_count: activeSites.length,
+function buildTP(){
+  const pe=document.getElementById('tp-presets');
+  THEMES.forEach((t,i)=>{
+    const b=document.createElement('div');
+    b.className='theme-preset'+(i===0?' active':'');
+    b.style.cssText=`background:${t.pb};color:${t.pa}`;
+    b.textContent=t.name;
+    b.onclick=()=>{
+      document.querySelectorAll('.theme-preset').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      applyTheme(t);
+      $('cp-bg').value=t.bg;$('cp-sur').value=t.sur;$('cp-ac1').value=t.ac;$('cp-ac2').value=t.ac2;$('cp-txt').value=t.txt;
     };
+    pe.appendChild(b);
+  });
+  const ge=document.getElementById('tp-grads');
+  GRADS.forEach((g,i)=>{
+    const s=document.createElement('div');
+    s.className='grad-swatch'+(i===0?' active':'');
+    s.style.background=`linear-gradient(135deg,${g.g1},${g.g2})`;
+    s.title=g.n;
+    s.onclick=()=>{document.querySelectorAll('.grad-swatch').forEach(x=>x.classList.remove('active'));s.classList.add('active');applyGrad(g);};
+    ge.appendChild(s);
+  });
+}
+function openTP(){document.getElementById('theme-panel').classList.add('open')}
+function closeTP(){document.getElementById('theme-panel').classList.remove('open')}
+document.addEventListener('click',e=>{
+  const p=document.getElementById('theme-panel');
+  if(p.classList.contains('open')&&!p.contains(e.target)&&!e.target.closest('.icon-btn'))closeTP();
+});
+
+/* ── STATE ── */
+let RAW=[],ALL_SITES=[...SITE_COLS],months=[];
+let selMonth='',selStatus='',searchQ='',activeView='overview',selTrendMonth='';
+let selSites=new Set(),filterFM=false,filterNI=false;
+
+function $(id){return document.getElementById(id)}
+
+/* ── DATA ── */
+function parseDate(d){
+  if(!d)return null;const s=String(d).trim();
+  let m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+  const dt=new Date(s);return isNaN(dt)?null:dt;
+}
+function fmtD(d){if(!d)return '—';return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`}
+
+function parseSheet(rows){
+  return rows.map(row=>{
+    const sd=parseDate(row['Start Date']),ed=parseDate(row['End Date']);
+    if(!sd||!String(row['Client Name']||'').trim())return null;
+    const sites=SITE_COLS.filter(s=>['TRUE','1','YES'].includes(String(row[s]||'').trim().toUpperCase()));
+    const mn=`${sd.getFullYear()}-${String(sd.getMonth()+1).padStart(2,'0')}`;
+    return{client:String(row['Client Name']).trim(),campaign:String(row['Campaign Name']||'').trim(),
+      start:fmtD(sd),startDate:sd,end:fmtD(ed),endDate:ed,
+      days:String(row['Days']||'').trim(),status:String(row['Status']||'').trim(),
+      inv:String(row['INV']||'').trim(),month:`${MON_NAMES[sd.getMonth()]} ${sd.getFullYear()}`,
+      month_num:mn,sites,site_count:sites.length};
   }).filter(Boolean);
 }
 
-async function loadData() {
-  showLoading(true);
-  hideError();
-  try {
-    // Use no-cors proxy workaround via jsonp-style or direct fetch
-    const res = await fetch(SHEET_URL, { mode: 'cors' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    RAW = parseSheetData(json);
-
-    // Rebuild month list from fresh data
-    months = [...new Set(RAW.map(r => r.month_num))].sort();
-
-    // Rebuild month filter dropdown
-    const mSel = document.getElementById('month-filter');
-    const prevMonth = mSel.value;
-    mSel.innerHTML = '<option value="">All Months</option>';
-    months.forEach(m => {
-      const d = RAW.find(r => r.month_num === m);
-      const opt = document.createElement('option');
-      opt.value = m; opt.textContent = d.month;
-      if (m === prevMonth) opt.selected = true;
-      mSel.appendChild(opt);
-    });
-
-    // Rebuild ALL_SITES from data (use all known site columns)
-    ALL_SITES = SITE_COLUMNS.filter(s => RAW.some(r => r.sites.includes(s)));
-
-    // Update header stats
-    document.getElementById('hs-total').textContent   = RAW.length;
-    document.getElementById('hs-sites').textContent   = ALL_SITES.length;
-    document.getElementById('hs-clients').textContent = new Set(RAW.map(r => r.client)).size;
-
-    // Last updated
-    const now = new Date();
-    document.getElementById('last-updated-text').textContent =
-      `Live · ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
-
-    render();
-    showLoading(false);
-  } catch (err) {
-    showLoading(false);
-    showError(err);
+async function loadData(){
+  $('loading-overlay').style.display='flex';$('error-banner').style.display='none';
+  try{
+    const res=await fetch(SHEET_URL,{mode:'cors'});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const json=await res.json();
+    RAW=parseSheet(json);
+    months=[...new Set(RAW.map(r=>r.month_num))].sort();
+    ALL_SITES=SITE_COLS.filter(s=>RAW.some(r=>r.sites.includes(s)));
+    rebuildMonthSel();
+    $('hs-total').textContent=RAW.length;
+    $('hs-sites').textContent=ALL_SITES.length;
+    $('hs-clients').textContent=new Set(RAW.map(r=>r.client)).size;
+    $('hs-noinv').textContent=RAW.filter(r=>!r.inv||r.inv==='NA'||r.inv==='').length;
+    const now=new Date();$('lu-text').textContent=`Live · ${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+    render();$('loading-overlay').style.display='none';
+  }catch(err){
+    $('loading-overlay').style.display='none';
+    const el=$('error-banner');el.style.display='block';
+    el.innerHTML=`⚠️ Could not load data. <strong>${err.message}</strong> — Ensure Apps Script is deployed as "Anyone". <button onclick="loadData()" style="margin-left:10px;padding:2px 8px;border-radius:4px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-family:inherit;font-size:.7rem">Retry</button>`;
   }
 }
 
-function showLoading(on) {
-  document.getElementById('loading-overlay').style.display = on ? 'flex' : 'none';
+function rebuildMonthSel(){
+  const sel=$('month-filter'),prev=sel.value;
+  sel.innerHTML='<option value="">All Months</option>';
+  months.forEach(m=>{
+    const d=RAW.find(r=>r.month_num===m);
+    const o=document.createElement('option');o.value=m;o.textContent=d.month;
+    if(m===prev)o.selected=true;sel.appendChild(o);
+  });
 }
 
-function showError(err) {
-  const el = document.getElementById('error-banner');
-  el.style.display = 'block';
-  el.innerHTML = `
-    ⚠️ Could not load data from Google Sheets. 
-    <strong>${err.message}</strong> — 
-    Make sure the Apps Script is deployed as "Anyone" access. 
-    <button onclick="loadData()" style="margin-left:12px;padding:3px 10px;border-radius:4px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;font-family:inherit;font-size:0.7rem;">Retry</button>
-  `;
+/* ── FILTER ── */
+function isFullMonth(r,mn){
+  if(!mn)return true;
+  const[yr,mo]=mn.split('-').map(Number);
+  const ms=new Date(yr,mo-1,1),me=new Date(yr,mo,0);
+  return r.startDate&&r.endDate&&r.startDate<=ms&&r.endDate>=me;
 }
 
-function hideError() {
-  document.getElementById('error-banner').style.display = 'none';
-}
-
-// ─────────────────────────────────────────────
-//  FILTERING
-// ─────────────────────────────────────────────
-function getFiltered() {
-  const month = selectedTrendMonth || selectedMonth;
-  return RAW.filter(r => {
-    if (month && r.month_num !== month) return false;
-    if (selectedStatus && r.status !== selectedStatus) return false;
-    if (selectedSites.size > 0 && !r.sites.some(s => selectedSites.has(s))) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      if (!r.client.toLowerCase().includes(q) && !r.campaign.toLowerCase().includes(q)) return false;
-    }
+function getFiltered(){
+  const m=selTrendMonth||selMonth;
+  return RAW.filter(r=>{
+    if(m&&r.month_num!==m)return false;
+    if(selStatus&&r.status!==selStatus)return false;
+    if(selSites.size>0&&!r.sites.some(s=>selSites.has(s)))return false;
+    if(filterFM){if(!m)return false;if(!isFullMonth(r,m))return false;}
+    if(filterNI&&r.inv&&r.inv!==''&&r.inv!=='NA')return false;
+    if(searchQ){const q=searchQ.toLowerCase();if(!r.client.toLowerCase().includes(q)&&!r.campaign.toLowerCase().includes(q))return false;}
     return true;
   });
 }
 
-// ─────────────────────────────────────────────
-//  SITE FILTER DROPDOWN
-// ─────────────────────────────────────────────
-function buildSiteCheckboxes(query = '') {
-  const grid = document.getElementById('site-checkbox-grid');
-  grid.innerHTML = '';
-  ALL_SITES.filter(s => s.toLowerCase().includes(query.toLowerCase())).forEach(site => {
-    const item = document.createElement('label');
-    item.className = 'site-cb-item' + (selectedSites.has(site) ? ' checked' : '');
-    item.innerHTML = `<input type="checkbox" ${selectedSites.has(site) ? 'checked' : ''}><span>${site}</span>`;
-    item.addEventListener('click', e => {
-      e.preventDefault();
-      selectedSites.has(site) ? selectedSites.delete(site) : selectedSites.add(site);
-      item.classList.toggle('checked', selectedSites.has(site));
-      updateSiteFilterBtn();
-      render();
-    });
-    grid.appendChild(item);
+function toggleFM(){filterFM=!filterFM;$('fm-btn').className='toggle-btn'+(filterFM?' active-green':'');render();}
+function toggleNI(){filterNI=!filterNI;$('ni-btn').className='toggle-btn'+(filterNI?' active-amber':'');render();}
+
+/* ── SITE DROPDOWN ── */
+function buildSCG(q=''){
+  const g=$('scg');g.innerHTML='';
+  ALL_SITES.filter(s=>s.toLowerCase().includes(q.toLowerCase())).forEach(site=>{
+    const item=document.createElement('label');
+    item.className='site-cb-item'+(selSites.has(site)?' checked':'');
+    item.innerHTML=`<input type="checkbox" ${selSites.has(site)?'checked':''}><span>${site}</span>`;
+    item.addEventListener('click',e=>{e.preventDefault();selSites.has(site)?selSites.delete(site):selSites.add(site);item.classList.toggle('checked',selSites.has(site));updSFB();render();});
+    g.appendChild(item);
   });
 }
+function updSFB(){
+  const b=$('sfb'),c=$('sfc');
+  b.childNodes[0].textContent=selSites.size?'Sites ':'All Sites ';
+  c.textContent=selSites.size;c.className=selSites.size?'v':'';
+}
+function selectAll(){ALL_SITES.forEach(s=>selSites.add(s));buildSCG($('ss').value);updSFB();render();}
+function clearAll(){selSites.clear();buildSCG($('ss').value);updSFB();render();}
 
-function updateSiteFilterBtn() {
-  const btn = document.getElementById('site-filter-btn');
-  const countEl = document.getElementById('site-filter-count');
-  btn.childNodes[0].textContent = selectedSites.size ? 'Sites ' : 'All Sites ';
-  countEl.textContent = selectedSites.size;
-  countEl.classList.toggle('visible', selectedSites.size > 0);
+/* ── CHIPS ── */
+function renderChips(){
+  const cc=[];
+  if(selMonth)cc.push({l:RAW.find(r=>r.month_num===selMonth)?.month,c:()=>{selMonth='';$('month-filter').value='';selTrendMonth='';}});
+  if(selTrendMonth)cc.push({l:(RAW.find(r=>r.month_num===selTrendMonth)?.month||'')+' (trend)',c:()=>{selTrendMonth='';}});
+  if(selStatus)cc.push({l:selStatus,c:()=>{selStatus='';document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.status-btn.all').classList.add('active');}});
+  [...selSites].forEach(s=>cc.push({l:s,c:()=>{selSites.delete(s);updSFB();buildSCG();}}));
+  if(filterFM)cc.push({l:'📅 Full Month',c:()=>{filterFM=false;$('fm-btn').className='toggle-btn';}});
+  if(filterNI)cc.push({l:'⚠ No Invoice',c:()=>{filterNI=false;$('ni-btn').className='toggle-btn';}});
+  if(searchQ)cc.push({l:`"${searchQ}"`,c:()=>{searchQ='';$('search-input').value='';}});
+  const bar=$('active-filters'),el=$('chips');
+  bar.style.display=cc.length?'block':'none';
+  el.innerHTML=cc.map((c,i)=>`<span class="filter-chip" data-i="${i}">${c.l} ✕</span>`).join('');
+  el.querySelectorAll('.filter-chip').forEach((e,i)=>e.addEventListener('click',()=>{cc[i].c();render();}));
 }
 
-function selectAllSites() {
-  ALL_SITES.forEach(s => selectedSites.add(s));
-  buildSiteCheckboxes(document.getElementById('site-search').value);
-  updateSiteFilterBtn(); render();
-}
-function clearAllSites() {
-  selectedSites.clear();
-  buildSiteCheckboxes(document.getElementById('site-search').value);
-  updateSiteFilterBtn(); render();
-}
-
-// ─────────────────────────────────────────────
-//  FILTER CHIPS
-// ─────────────────────────────────────────────
-function renderFilterChips() {
-  const chips = [];
-  if (selectedMonth) chips.push({ label: RAW.find(r => r.month_num === selectedMonth)?.month, clear: () => { selectedMonth = ''; document.getElementById('month-filter').value = ''; selectedTrendMonth = ''; } });
-  if (selectedTrendMonth) chips.push({ label: RAW.find(r => r.month_num === selectedTrendMonth)?.month + ' (trend)', clear: () => { selectedTrendMonth = ''; } });
-  if (selectedStatus) chips.push({ label: selectedStatus, clear: () => { selectedStatus = ''; document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active')); document.querySelector('.status-btn.all').classList.add('active'); } });
-  [...selectedSites].forEach(s => chips.push({ label: s, clear: () => { selectedSites.delete(s); updateSiteFilterBtn(); buildSiteCheckboxes(); } }));
-  if (searchQuery) chips.push({ label: `"${searchQuery}"`, clear: () => { searchQuery = ''; document.getElementById('search-input').value = ''; } });
-
-  const bar     = document.getElementById('active-filters');
-  const chipsEl = document.getElementById('filter-chips');
-  bar.style.display = chips.length ? 'block' : 'none';
-  chipsEl.innerHTML = chips.map((c, i) => `<span class="filter-chip" data-i="${i}">${c.label} ✕</span>`).join('');
-  chipsEl.querySelectorAll('.filter-chip').forEach((el, i) => el.addEventListener('click', () => { chips[i].clear(); render(); }));
-}
-
-function clearAllFilters() {
-  selectedMonth = ''; selectedStatus = ''; searchQuery = ''; selectedTrendMonth = ''; selectedSites.clear();
-  document.getElementById('month-filter').value = '';
-  document.getElementById('search-input').value = '';
-  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+function clearAllF(){
+  selMonth='';selStatus='';searchQ='';selTrendMonth='';selSites.clear();filterFM=false;filterNI=false;
+  $('month-filter').value='';$('search-input').value='';
+  document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('.status-btn.all').classList.add('active');
-  updateSiteFilterBtn(); buildSiteCheckboxes(); render();
+  $('fm-btn').className='toggle-btn';$('ni-btn').className='toggle-btn';
+  updSFB();buildSCG();render();
 }
 
-// ─────────────────────────────────────────────
-//  RENDER HELPERS
-// ─────────────────────────────────────────────
-function statusPill(s) {
-  const cls = s === 'Finish' ? 'pill-finish' : s === 'Run' ? 'pill-run' : 'pill-wip';
-  return `<span class="pill ${cls}">${s || '—'}</span>`;
+/* ── RENDER ── */
+function g1(){return getComputedStyle(document.documentElement).getPropertyValue('--grad1').trim()||'#4f8ef7'}
+function g2(){return getComputedStyle(document.documentElement).getPropertyValue('--grad2').trim()||'#7c5cfc'}
+
+function spill(s){const c=s==='Finish'?'pill-finish':s==='Run'?'pill-run':'pill-wip';return `<span class="pill ${c}">${s||'—'}</span>`}
+function invCell(r){return r.inv&&r.inv!=='NA'&&r.inv!==''?`<span style="color:var(--dim);font-size:.62rem">${r.inv}</span>`:'<span class="no-inv">No INV</span>'}
+
+function hclr(v,max){
+  if(!v)return 'var(--surface2)';
+  const p=v/max,a=['22','44','66','88','aa','cc','ee'][Math.min(Math.floor(p*7),6)];
+  return g1()+a;
 }
 
-function heatColor(v, max) {
-  if (!v) return '#1a1f38';
-  const p = v / max;
-  if (p < 0.2) return '#1a2a4a';
-  if (p < 0.4) return '#1d3a6e';
-  if (p < 0.6) return '#2a5aa8';
-  if (p < 0.8) return '#3b75d4';
-  return '#4f8ef7';
-}
-function heatText(v, max) { return v / max > 0.4 ? '#e8ecff' : '#6b7299'; }
-
-// ─────────────────────────────────────────────
-//  RENDER FUNCTIONS
-// ─────────────────────────────────────────────
-function renderKPIs(data) {
-  const clients    = new Set(data.map(r => r.client)).size;
-  const totalSites = data.reduce((a, r) => a + r.site_count, 0);
-  const avg        = data.length ? (totalSites / data.length).toFixed(1) : 0;
-  document.getElementById('kpi-campaigns').textContent = data.length;
-  document.getElementById('kpi-clients').textContent   = clients;
-  document.getElementById('kpi-bookings').textContent  = totalSites;
-  document.getElementById('kpi-avg').textContent       = avg;
+function renderKPIs(data){
+  const cl=new Set(data.map(r=>r.client)).size,tot=data.reduce((a,r)=>a+r.site_count,0);
+  const avg=data.length?(tot/data.length).toFixed(1):0,ni=data.filter(r=>!r.inv||r.inv===''||r.inv==='NA').length;
+  $('kpi-c').textContent=data.length;$('kpi-cl').textContent=cl;$('kpi-b').textContent=tot;$('kpi-a').textContent=avg;$('kpi-ni').textContent=ni;
 }
 
-function renderTrend() {
-  const el = document.getElementById('month-trend');
-  const counts = {};
-  months.forEach(m => counts[m] = 0);
-  RAW.forEach(r => { if (counts[r.month_num] !== undefined) counts[r.month_num]++; });
-  const max = Math.max(...Object.values(counts), 1);
-  el.innerHTML = '';
-  months.forEach(m => {
-    const count = counts[m];
-    const pct   = (count / max) * 100;
-    const label = (RAW.find(r => r.month_num === m)?.month || m).split(' ')[0].slice(0, 3);
-    const wrap  = document.createElement('div');
-    wrap.className = 'month-bar-wrap';
-    wrap.innerHTML = `
-      <div class="month-bar-val">${count}</div>
-      <div class="month-bar ${m === selectedTrendMonth ? 'selected' : ''}" style="height:${Math.max(pct * 0.72, 3)}px"></div>
-      <div class="month-bar-lbl">${label}</div>`;
-    wrap.querySelector('.month-bar').addEventListener('click', () => {
-      selectedTrendMonth = selectedTrendMonth === m ? '' : m;
-      const d = RAW.find(r => r.month_num === m);
-      document.getElementById('trend-badge').textContent = selectedTrendMonth ? `filtered: ${d?.month}` : 'click bar to filter';
+function renderTrend(){
+  const el=$('month-trend'),counts={};
+  months.forEach(m=>counts[m]=0);RAW.forEach(r=>{if(counts[r.month_num]!==undefined)counts[r.month_num]++;});
+  const max=Math.max(...Object.values(counts),1);el.innerHTML='';
+  months.forEach(m=>{
+    const count=counts[m],pct=(count/max)*100;
+    const lbl=(RAW.find(r=>r.month_num===m)?.month||m).split(' ')[0].slice(0,3);
+    const w=document.createElement('div');w.className='month-bar-wrap';
+    w.innerHTML=`<div class="month-bar-val">${count}</div><div class="month-bar${m===selTrendMonth?' selected':''}" style="height:${Math.max(pct*.72,3)}px"></div><div class="month-bar-lbl">${lbl}</div>`;
+    w.querySelector('.month-bar').onclick=()=>{
+      selTrendMonth=selTrendMonth===m?'':m;
+      $('trend-badge').textContent=selTrendMonth?`filtered: ${RAW.find(r=>r.month_num===m)?.month}`:'click bar to filter';
       render();
-    });
-    el.appendChild(wrap);
+    };
+    el.appendChild(w);
   });
 }
 
-function renderDonut(data) {
-  const counts = { Finish: 0, Run: 0, WIP: 0 };
-  data.forEach(r => { if (r.status in counts) counts[r.status]++; });
-  const total  = data.length || 1;
-  const colors = { Finish: '#2ecc8a', Run: '#4f8ef7', WIP: '#f5a623' };
-  const svg    = document.getElementById('donut-svg');
-  const legend = document.getElementById('donut-legend');
-  svg.innerHTML = ''; legend.innerHTML = '';
-  const cx = 65, cy = 65, R = 48, ir = 30;
-  let angle = -Math.PI / 2;
-  Object.entries(counts).forEach(([status, count]) => {
-    if (!count) return;
-    const sweep = (count / total) * 2 * Math.PI;
-    const end   = angle + sweep;
-    const large = sweep > Math.PI ? 1 : 0;
-    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    p.setAttribute('d', `M ${cx+R*Math.cos(angle)} ${cy+R*Math.sin(angle)} A ${R} ${R} 0 ${large} 1 ${cx+R*Math.cos(end)} ${cy+R*Math.sin(end)} L ${cx+ir*Math.cos(end)} ${cy+ir*Math.sin(end)} A ${ir} ${ir} 0 ${large} 0 ${cx+ir*Math.cos(angle)} ${cy+ir*Math.sin(angle)} Z`);
-    p.setAttribute('fill', colors[status]); p.setAttribute('opacity', '0.9');
-    svg.appendChild(p);
-    angle = end;
-    legend.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${colors[status]}"></div><span style="color:var(--muted)">${status}</span><span style="margin-left:auto;color:var(--text);padding-left:12px">${count}</span></div>`;
+function renderDonut(data){
+  const counts={Finish:0,Run:0,WIP:0};data.forEach(r=>{if(r.status in counts)counts[r.status]++;});
+  const total=data.length||1,colors={Finish:'#2ecc8a',Run:'#4f8ef7',WIP:'#f5a623'};
+  const svg=$('donut-svg'),leg=$('donut-legend');svg.innerHTML='';leg.innerHTML='';
+  const cx=65,cy=65,R=48,ir=30;let a=-Math.PI/2;
+  Object.entries(counts).forEach(([st,count])=>{
+    if(!count)return;const sw=(count/total)*2*Math.PI,end=a+sw,lg=sw>Math.PI?1:0;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',`M ${cx+R*Math.cos(a)} ${cy+R*Math.sin(a)} A ${R} ${R} 0 ${lg} 1 ${cx+R*Math.cos(end)} ${cy+R*Math.sin(end)} L ${cx+ir*Math.cos(end)} ${cy+ir*Math.sin(end)} A ${ir} ${ir} 0 ${lg} 0 ${cx+ir*Math.cos(a)} ${cy+ir*Math.sin(a)} Z`);
+    p.setAttribute('fill',colors[st]);p.setAttribute('opacity','0.9');svg.appendChild(p);a=end;
+    leg.innerHTML+=`<div class="legend-item"><div class="legend-dot" style="background:${colors[st]}"></div><span style="color:var(--muted)">${st}</span><span style="margin-left:auto;padding-left:12px">${count}</span></div>`;
   });
-  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  t.setAttribute('x', cx); t.setAttribute('y', cy + 6);
-  t.setAttribute('text-anchor', 'middle'); t.setAttribute('fill', '#e8ecff');
-  t.setAttribute('font-family', 'Syne,sans-serif'); t.setAttribute('font-size', '18'); t.setAttribute('font-weight', '700');
-  t.textContent = data.length; svg.appendChild(t);
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',cx);t.setAttribute('y',cy+6);t.setAttribute('text-anchor','middle');
+  t.setAttribute('fill','var(--text)');t.setAttribute('font-family','Syne,sans-serif');t.setAttribute('font-size','18');t.setAttribute('font-weight','700');
+  t.textContent=data.length;svg.appendChild(t);
 }
 
-function renderBarChart(el, items, colorFn) {
-  const max = Math.max(...items.map(i => i.val), 1);
-  el.innerHTML = '';
-  items.slice(0, 10).forEach(item => {
-    const pct   = (item.val / max) * 100;
-    const color = colorFn(item.val, max);
-    el.innerHTML += `<div class="bar-row">
-      <div class="bar-label" title="${item.label}">${item.label}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}">${item.val > 3 ? item.val : ''}</div></div>
-      <div class="bar-val">${item.val}</div></div>`;
+function renderBarChart(el,items,gradFn){
+  const max=Math.max(...items.map(i=>i.val),1);el.innerHTML='';
+  items.slice(0,10).forEach(item=>{
+    const pct=(item.val/max)*100,grad=gradFn(item.val,max);
+    el.innerHTML+=`<div class="bar-row"><div class="bar-label" title="${item.label}">${item.label}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${grad}">${item.val>3?item.val:''}</div></div><div class="bar-val">${item.val}</div></div>`;
   });
 }
 
-function renderTopClients(data) {
-  const map = {};
-  data.forEach(r => { map[r.client] = (map[r.client] || 0) + r.site_count; });
-  const items = Object.entries(map).sort((a,b) => b[1]-a[1]).map(([label, val]) => ({label, val}));
-  renderBarChart(document.getElementById('top-clients-chart'), items, (v, m) => `rgb(79,${Math.round(40+(v/m)*180)},247)`);
+function renderTopClients(data){
+  const map={};data.forEach(r=>{map[r.client]=(map[r.client]||0)+r.site_count;});
+  const items=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([label,val])=>({label,val}));
+  renderBarChart($('tc-chart'),items,()=>`linear-gradient(90deg,${g1()},${g2()})`);
 }
 
-function renderTopSites(data) {
-  const map = {};
-  ALL_SITES.forEach(s => map[s] = 0);
-  data.forEach(r => r.sites.forEach(s => { map[s] = (map[s]||0) + 1; }));
-  const items = Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([label,val])=>({label,val}));
-  renderBarChart(document.getElementById('top-sites-chart'), items, (v, m) => {
-    const p = v/m; return p > 0.7 ? '#2ecc8a' : p > 0.4 ? '#4f8ef7' : '#7c5cfc';
-  });
+function renderTopSites(data){
+  const map={};ALL_SITES.forEach(s=>map[s]=0);data.forEach(r=>r.sites.forEach(s=>{map[s]=(map[s]||0)+1;}));
+  const items=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([label,val])=>({label,val}));
+  renderBarChart($('ts-chart'),items,(v,m)=>{const p=v/m;return p>.7?`linear-gradient(90deg,${g1()},${g2()})`:p>.4?`linear-gradient(90deg,${g2()},${g1()})`:`linear-gradient(90deg,var(--muted),${g2()})`;});
 }
 
-function renderHeatmap(data) {
-  const map = {};
-  ALL_SITES.forEach(s => map[s] = 0);
-  data.forEach(r => r.sites.forEach(s => { map[s] = (map[s]||0)+1; }));
-  const max  = Math.max(...Object.values(map), 1);
-  const grid = document.getElementById('heatmap-grid');
-  grid.innerHTML = '';
-  ALL_SITES.forEach(site => {
-    const count = map[site];
-    const cell  = document.createElement('div');
-    cell.className = 'hmap-cell';
-    cell.style.background = heatColor(count, max);
-    cell.innerHTML = `<div class="site-name">${site}</div><div class="site-count" style="color:${heatText(count,max)}">${count}</div>`;
-    cell.addEventListener('click', () => showSiteDetail(site, data));
+function renderHeatmap(data){
+  const map={};ALL_SITES.forEach(s=>map[s]=0);data.forEach(r=>r.sites.forEach(s=>{map[s]=(map[s]||0)+1;}));
+  const max=Math.max(...Object.values(map),1);
+  const grid=$('hmap');grid.innerHTML='';
+  ALL_SITES.forEach(site=>{
+    const count=map[site],cell=document.createElement('div');
+    cell.className='hmap-cell';cell.style.background=hclr(count,max);
+    cell.innerHTML=`<div class="site-name">${site}</div><div class="site-count" style="color:${count/max>.5?'#fff':'var(--muted)'}">${count}</div>`;
+    cell.onclick=()=>showSiteDetail(site,data);
     grid.appendChild(cell);
   });
 }
 
-function showSiteDetail(site, data) {
-  document.getElementById('site-detail-title').textContent = `Campaigns at — ${site}`;
-  const rows    = data.filter(r => r.sites.includes(site));
-  const content = document.getElementById('site-detail-content');
-  if (!rows.length) { content.innerHTML = '<div class="empty-state">No campaigns for this site in the selected period.</div>'; return; }
-  content.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Client</th><th>Campaign</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>INV</th></tr></thead>
-    <tbody>${rows.map(r => `<tr>
-      <td><strong>${r.client}</strong></td><td style="color:var(--muted)">${r.campaign||'—'}</td>
-      <td>${r.start}</td><td>${r.end}</td>
-      <td style="color:var(--muted)">${r.days}</td><td>${statusPill(r.status)}</td>
-      <td style="color:var(--dim);font-size:0.63rem">${r.inv||'—'}</td>
-    </tr>`).join('')}</tbody></table></div>`;
+function showSiteDetail(site,data){
+  $('sd-title').textContent=`Campaigns at — ${site}`;
+  const rows=data.filter(r=>r.sites.includes(site));const c=$('sd-content');
+  if(!rows.length){c.innerHTML='<div class="empty-state">No campaigns for this site.</div>';return;}
+  c.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Client</th><th>Campaign</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>INV</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${r.client}</strong></td><td style="color:var(--muted)">${r.campaign||'—'}</td><td>${r.start}</td><td>${r.end}</td><td style="color:var(--muted)">${r.days}</td><td>${spill(r.status)}</td><td>${invCell(r)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
-function renderCampaignTable(data) {
-  document.getElementById('campaign-count-badge').textContent = `${data.length} entries`;
-  document.getElementById('campaign-tbody').innerHTML = data.map((r, i) => `<tr>
+function renderMatrix(){
+  const tbl=$('mtable');tbl.innerHTML='';
+  const mons=months.filter(m=>RAW.some(r=>r.month_num===m));
+  const mat={};
+  ALL_SITES.forEach(s=>{mat[s]={};mons.forEach(m=>mat[s][m]=[]);});
+  RAW.forEach(r=>r.sites.forEach(s=>{if(mat[s]&&mat[s][r.month_num]!==undefined)mat[s][r.month_num].push(r);}));
+  let mx=0;ALL_SITES.forEach(s=>mons.forEach(m=>{mx=Math.max(mx,mat[s][m].length);}));
+
+  const thead=document.createElement('thead');
+  let hh=`<tr><th class="rh">Site</th>`;
+  mons.forEach(m=>{const lb=(RAW.find(r=>r.month_num===m)?.month||m).split(' ');hh+=`<th>${lb[0].slice(0,3)}<br><span style="font-size:.49rem">${lb[1]||''}</span></th>`;});
+  hh+='<th>Total</th></tr>';thead.innerHTML=hh;tbl.appendChild(thead);
+
+  const tbody=document.createElement('tbody');
+  const mTotals={};mons.forEach(m=>{mTotals[m]=ALL_SITES.reduce((a,s)=>a+mat[s][m].length,0);});
+  const grand=Object.values(mTotals).reduce((a,b)=>a+b,0);
+
+  ALL_SITES.forEach(site=>{
+    const sTotal=mons.reduce((a,m)=>a+mat[site][m].length,0);
+    const tr=document.createElement('tr');
+    let h=`<td class="sl">${site}</td>`;
+    mons.forEach(m=>{
+      const cnt=mat[site][m].length,bg=hclr(cnt,mx),color=cnt/mx>.5?'#fff':'var(--text)';
+      h+=`<td style="background:${bg};color:${color};font-size:${cnt?'.76rem':'.52rem'}" onclick="showMatrixDetail('${site}','${m}')">${cnt||'·'}</td>`;
+    });
+    h+=`<td style="color:var(--accent);font-size:.72rem;font-weight:700">${sTotal}</td>`;
+    tr.innerHTML=h;tbody.appendChild(tr);
+  });
+
+  const ttr=document.createElement('tr');ttr.className='tr-total';
+  let th=`<td class="sl" style="color:var(--text);font-weight:600">Monthly Total</td>`;
+  mons.forEach(m=>{th+=`<td style="color:var(--accent)">${mTotals[m]}</td>`;});
+  th+=`<td style="color:var(--accent);font-weight:700">${grand}</td>`;
+  ttr.innerHTML=th;tbody.appendChild(ttr);
+  tbl.appendChild(tbody);
+}
+
+function showMatrixDetail(site,mn){
+  const campaigns=RAW.filter(r=>r.month_num===mn&&r.sites.includes(site));
+  const ml=RAW.find(r=>r.month_num===mn)?.month||mn;
+  $('modal-title-text').textContent=`${site} — ${ml} (${campaigns.length})`;
+  const c=$('modal-body');
+  if(!campaigns.length){c.innerHTML='<div class="empty-state">No campaigns.</div>';}
+  else{c.innerHTML=`<table><thead><tr><th>Client</th><th>Campaign</th><th>Start</th><th>End</th><th>Status</th><th>INV</th></tr></thead><tbody>${campaigns.map(r=>`<tr><td><strong>${r.client}</strong></td><td style="color:var(--muted)">${r.campaign||'—'}</td><td>${r.start}</td><td>${r.end}</td><td>${spill(r.status)}</td><td>${invCell(r)}</td></tr>`).join('')}</tbody></table>`;}
+  $('modal-overlay').classList.add('open');
+}
+function closeModal(){$('modal-overlay').classList.remove('open');}
+$('modal-overlay').onclick=e=>{if(e.target===$('modal-overlay'))closeModal();};
+
+function renderCampaigns(data){
+  $('cc-badge').textContent=`${data.length} entries`;
+  $('ctbody').innerHTML=data.map((r,i)=>`<tr>
     <td style="color:var(--dim)">${i+1}</td>
     <td><strong>${r.client}</strong></td>
     <td style="color:var(--muted)">${r.campaign||'—'}</td>
     <td>${r.start}</td><td>${r.end}</td>
     <td style="color:var(--muted)">${r.days}</td>
-    <td>${statusPill(r.status)}</td>
-    <td style="color:var(--dim);font-size:0.62rem">${r.inv||'—'}</td>
+    <td>${spill(r.status)}</td>
+    <td>${invCell(r)}</td>
     <td><div class="site-tags">${r.sites.map(s=>`<span class="site-tag">${s}</span>`).join('')}</div></td>
-    <td style="color:var(--accent);font-family:'Syne',sans-serif;font-weight:700">${r.site_count}</td>
+    <td style="background:linear-gradient(90deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Syne',sans-serif;font-weight:700">${r.site_count}</td>
   </tr>`).join('');
 }
 
-// ─────────────────────────────────────────────
-//  MAIN RENDER
-// ─────────────────────────────────────────────
-function render() {
-  renderFilterChips();
-  const data = getFiltered();
-  if (activeView === 'overview') {
-    renderKPIs(data); renderTrend(); renderDonut(data); renderTopClients(data); renderTopSites(data);
-  } else if (activeView === 'site') {
-    renderHeatmap(data);
-    document.getElementById('site-detail-title').textContent = 'Select a site above to see campaigns';
-    document.getElementById('site-detail-content').innerHTML = '';
-  } else {
-    renderCampaignTable(data);
-  }
+function render(){
+  renderChips();const data=getFiltered();
+  if(activeView==='overview'){renderKPIs(data);renderTrend();renderDonut(data);renderTopClients(data);renderTopSites(data);}
+  else if(activeView==='site'){renderHeatmap(data);$('sd-title').textContent='Select a site above';$('sd-content').innerHTML='';}
+  else if(activeView==='matrix'){renderMatrix();}
+  else{renderCampaigns(data);}
 }
 
-// ─────────────────────────────────────────────
-//  EVENTS
-// ─────────────────────────────────────────────
-document.getElementById('month-filter').addEventListener('change', e => { selectedMonth = e.target.value; selectedTrendMonth = ''; render(); });
+/* ── EVENTS ── */
+$('month-filter').onchange=e=>{selMonth=e.target.value;selTrendMonth='';render();};
+document.querySelectorAll('.status-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');selStatus=btn.dataset.s;render();
+}));
+$('search-input').oninput=e=>{searchQ=e.target.value;render();};
 
-document.querySelectorAll('.status-btn').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedStatus = btn.dataset.status;
+const sfb=$('sfb'),sdd=$('sdd');
+sfb.onclick=e=>{e.stopPropagation();const o=sdd.classList.toggle('open');sfb.classList.toggle('open',o);if(o)buildSCG();};
+document.addEventListener('click',e=>{if(!sdd.contains(e.target)&&e.target!==sfb){sdd.classList.remove('open');sfb.classList.remove('open');}});
+$('ss').oninput=e=>buildSCG(e.target.value);
+
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');activeView=btn.dataset.v;
+  $('overview-view').classList.toggle('hidden',activeView!=='overview');
+  ['site','campaign','matrix'].forEach(v=>$(v+'-view').classList.toggle('active',activeView===v));
   render();
 }));
 
-document.getElementById('search-input').addEventListener('input', e => { searchQuery = e.target.value; render(); });
-
-// Site dropdown toggle
-const siteFilterBtn = document.getElementById('site-filter-btn');
-const siteDropdown  = document.getElementById('site-dropdown');
-siteFilterBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  const isOpen = siteDropdown.classList.toggle('open');
-  siteFilterBtn.classList.toggle('open', isOpen);
-  if (isOpen) buildSiteCheckboxes();
-});
-document.addEventListener('click', e => {
-  if (!siteDropdown.contains(e.target) && e.target !== siteFilterBtn) {
-    siteDropdown.classList.remove('open');
-    siteFilterBtn.classList.remove('open');
-  }
-});
-document.getElementById('site-search').addEventListener('input', e => buildSiteCheckboxes(e.target.value));
-
-// Tab switching
-document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activeView = btn.dataset.view;
-  document.getElementById('overview-view').classList.toggle('hidden', activeView !== 'overview');
-  document.getElementById('site-view').classList.toggle('active', activeView === 'site');
-  document.getElementById('campaign-view').classList.toggle('active', activeView === 'campaign');
-  render();
-}));
-
-// ─────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────
-loadData();
-setInterval(loadData, REFRESH_INTERVAL_MS);
+/* ── INIT ── */
+buildTP();applyTheme(THEMES[0]);
+loadData();setInterval(loadData,REFRESH_MS);
 </script>
 </body>
 </html>
